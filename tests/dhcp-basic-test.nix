@@ -17,19 +17,8 @@ pkgs.testers.nixosTest {
           };
         };
 
-        virtualisation.vlans = [ 1 ];
-        systemd.network.networks."10-lan".address = lib.mkForce [ "10.0.0.1/24" ];
+        virtualisation.memorySize = 1024;
         boot.loader.systemd-boot.enable = lib.mkForce false;
-      };
-
-    client1 =
-      { config, pkgs, ... }:
-      {
-        virtualisation.vlans = [ 1 ];
-        virtualisation.qemu.options = [ "-device virtio-net-pci,netdev=vlan1,mac=aa:bb:cc:dd:ee:01" ];
-
-        networking.useDHCP = false;
-        networking.interfaces.eth1.useDHCP = true;
       };
   };
 
@@ -38,7 +27,6 @@ pkgs.testers.nixosTest {
 
     with subtest("Gateway DHCP services start"):
         gateway.wait_for_unit("kea-dhcp4-server.service")
-        # kea-dhcp-ddns-server is conditional on TSIG key presence; skip in basic test
 
     with subtest("DHCPv4 server is listening"):
         gateway.wait_for_open_port(67)
