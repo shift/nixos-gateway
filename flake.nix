@@ -8,6 +8,8 @@
     impermanence.url = "github:nix-community/impermanence";
     engram.url = "github:vincents-ai/engram";
     engram.inputs.nixpkgs.follows = "nixpkgs";
+    aethalloc.url = "github:shift/aethalloc";
+    aethalloc.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs =
@@ -17,6 +19,7 @@
       disko,
       impermanence,
       engram,
+      aethalloc,
     }:
     let
       systems = [
@@ -27,8 +30,14 @@
     in
     {
       nixosModules = {
-        default = import ./modules;
-        gateway = import ./modules;
+        default = { ... }@args: {
+          imports = [ (import ./modules) aethalloc.nixosModules.default ];
+          _module.args.aethalloc = aethalloc;
+        };
+        gateway = { ... }@args: {
+          imports = [ (import ./modules) aethalloc.nixosModules.default ];
+          _module.args.aethalloc = aethalloc;
+        };
         dns = import ./modules/dns.nix;
         dhcp = import ./modules/dhcp.nix;
         disko = disko.nixosModules.disko;
@@ -44,6 +53,7 @@
         # network = import ./modules/network.nix;
         frr = import ./modules/frr.nix;
         policy-routing = import ./modules/policy-routing.nix;
+        aethalloc = import ./modules/aethalloc.nix;
         # direct-connect = import ./modules/direct-connect.nix;  # Temporarily disabled
         # dev-tools-monitor = import ./modules/dev-tools/monitor.nix;  # Temporarily disabled
         # api-gateway = import ./modules/api-gateway.nix;  # Temporarily disabled - complex dependencies
