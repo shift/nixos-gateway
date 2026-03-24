@@ -2,7 +2,6 @@
   config,
   lib,
   pkgs,
-  aethalloc,
   ...
 }:
 
@@ -10,15 +9,21 @@ let
   cfg = config.services.gateway.aethalloc;
 in
 {
-  imports = [
-    # Bring in aethalloc's own NixOS module (provides services.aethalloc.*)
-    aethalloc.nixosModules.default
-  ];
+  # NOTE: aethalloc.nixosModules.default is imported by the flake wrapper
+  # (nixosModules.default / nixosModules.gateway) which also injects
+  # _module.args.aethalloc.  This module only owns the gateway-level option
+  # surface and delegates to services.aethalloc.* which is provided by that
+  # upstream module when available.
+  #
+  # We do NOT import aethalloc.nixosModules.default here because this file is
+  # also imported by tests and standalone configurations that don't carry the
+  # aethalloc flake input — importing it here would cause an infinite
+  # recursion when the `aethalloc` module arg is absent.
 
   options.services.gateway.aethalloc = {
     enable = lib.mkOption {
       type = lib.types.bool;
-      default = true;
+      default = false;
       description = ''
         Whether to inject AethAlloc as the default memory allocator for
         gateway services via LD_PRELOAD.  AethAlloc is optimised for
@@ -28,6 +33,9 @@ in
         When enabled, the allocator is injected into the core gateway
         services listed in <option>services.gateway.aethalloc.services</option>.
         Set to <literal>false</literal> to fall back to glibc ptmalloc2.
+
+        Requires the aethalloc flake input to be wired in via the flake
+        nixosModules.default or nixosModules.gateway wrapper.
       '';
     };
 
@@ -60,7 +68,8 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    # Delegate to aethalloc's own module
+    # Delegate to aethalloc's own module (services.aethalloc.* is provided by
+    # aethalloc.nixosModules.default, imported by the flake wrapper).
     services.aethalloc = {
       enable = true;
       services = cfg.services;
