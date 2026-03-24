@@ -160,18 +160,20 @@ in
           log "🧪 Executing acceptance tests for $suite suite..."
           
           # Initialize results structure
-          cat > "$results_file" << EOF
-      {
-        "suite": "$suite",
-        "execution_date": "$(date -Iseconds)",
-        "reviewer": "$REVIEWER",
-        "test_phase": "acceptance",
-        "features": {},
-        "acceptance_criteria": {},
-        "overall_status": "in_progress",
-        "evidence_collected": []
-      }
-      EOF
+          jq -n \
+            --arg suite "$suite" \
+            --arg execution_date "$(date -Iseconds)" \
+            --arg reviewer "$REVIEWER" \
+            '{
+              suite: $suite,
+              execution_date: $execution_date,
+              reviewer: $reviewer,
+              test_phase: "acceptance",
+              features: {},
+              acceptance_criteria: {},
+              overall_status: "in_progress",
+              evidence_collected: []
+            }' > "$results_file"
           
           # Define feature tests based on suite
           case "$suite" in

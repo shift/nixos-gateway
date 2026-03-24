@@ -66,7 +66,7 @@ in
               "netstat"
               "conntrack"
             ];
-            extraArgs = [
+            extraFlags = [
               "--collector.textfile.directory=/var/lib/prometheus-node-exporter-text-files"
             ];
           };
