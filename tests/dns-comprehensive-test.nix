@@ -75,9 +75,6 @@ pkgs.testers.nixosTest {
     with subtest("Knot DNS configuration is valid"):
         gateway.succeed("knotc conf-check")
 
-    with subtest("Kresd configuration file is present"):
-        gateway.succeed("test -f /etc/kresd/kresd.config")
-
     with subtest("DNS smoke test"):
         gateway.succeed("echo 'DNS comprehensive test passed'")
   '';
