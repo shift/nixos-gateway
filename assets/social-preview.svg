@@ -28,8 +28,8 @@
     <circle cx="256" cy="256" r="140" fill="none" stroke="#7EBAE4" stroke-width="6" stroke-dasharray="15 15" opacity="0.4"/>
   </g>
 
-  <text x="500" y="300" font-family="system-ui, -apple-system, sans-serif" font-weight="800" font-size="80" fill="#FFFFFF" letter-spacing="-1">nixos-gateway</text>
-  <text x="505" y="360" font-family="system-ui, -apple-system, sans-serif" font-weight="500" font-size="30" fill="#7EBAE4">Declarative • Scalable • High-Performance</text>
-  <text x="505" y="410" font-family="system-ui, -apple-system, sans-serif" font-weight="400" font-size="22" fill="#A0ABC0" opacity="0.9">The ultimate enterprise edge routing and security platform</text>
-  <text x="505" y="445" font-family="system-ui, -apple-system, sans-serif" font-weight="400" font-size="22" fill="#A0ABC0" opacity="0.9">built on NixOS.</text>
+  <text x="500" y="300" font-family="Liberation Sans" font-weight="bold" font-size="80" fill="#FFFFFF" letter-spacing="-1">nixos-gateway</text>
+  <text x="505" y="360" font-family="Liberation Sans" font-weight="normal" font-size="30" fill="#7EBAE4">Declarative &#x2022; Scalable &#x2022; High-Performance</text>
+  <text x="505" y="410" font-family="Liberation Sans" font-weight="normal" font-size="22" fill="#A0ABC0" opacity="0.9">The ultimate enterprise edge routing and security platform</text>
+  <text x="505" y="445" font-family="Liberation Sans" font-weight="normal" font-size="22" fill="#A0ABC0" opacity="0.9">built on NixOS.</text>
 </svg>

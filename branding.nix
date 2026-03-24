@@ -3,27 +3,9 @@
 let
   palette = import ./palette.nix;
 
-  # Fontconfig file that points resvg at Liberation Sans (sans-serif stand-in)
-  # so text in the social preview renders correctly in the Nix sandbox.
-  fontconf = pkgs.writeText "fonts.conf" ''
-    <?xml version="1.0"?>
-    <!DOCTYPE fontconfig SYSTEM "fonts.dtd">
-    <fontconfig>
-      <dir>${pkgs.liberation_ttf}/share/fonts</dir>
-      <match target="pattern">
-        <test name="family"><string>system-ui</string></test>
-        <edit name="family" mode="assign"><string>Liberation Sans</string></edit>
-      </match>
-      <match target="pattern">
-        <test name="family"><string>-apple-system</string></test>
-        <edit name="family" mode="assign"><string>Liberation Sans</string></edit>
-      </match>
-      <match target="pattern">
-        <test name="family"><string>sans-serif</string></test>
-        <edit name="family" mode="assign"><string>Liberation Sans</string></edit>
-      </match>
-    </fontconfig>
-  '';
+  # resvg resolves fonts via its own database, not fontconfig.
+  # Pass the font dir explicitly and skip system fonts for a hermetic build.
+  fontDir = "${pkgs.liberation_ttf}/share/fonts/truetype";
 
   logoSvg = pkgs.writeText "logo.svg" ''
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
@@ -85,10 +67,10 @@ let
         <circle cx="256" cy="256" r="140" fill="none" stroke="${palette.colors.primaryLight}" stroke-width="6" stroke-dasharray="15 15" opacity="0.4"/>
       </g>
 
-      <text x="500" y="300" font-family="system-ui, -apple-system, sans-serif" font-weight="800" font-size="80" fill="${palette.colors.textMain}" letter-spacing="-1">nixos-gateway</text>
-      <text x="505" y="360" font-family="system-ui, -apple-system, sans-serif" font-weight="500" font-size="30" fill="${palette.colors.primaryLight}">Declarative • Scalable • High-Performance</text>
-      <text x="505" y="410" font-family="system-ui, -apple-system, sans-serif" font-weight="400" font-size="22" fill="${palette.colors.textMuted}" opacity="0.9">The ultimate enterprise edge routing and security platform</text>
-      <text x="505" y="445" font-family="system-ui, -apple-system, sans-serif" font-weight="400" font-size="22" fill="${palette.colors.textMuted}" opacity="0.9">built on NixOS.</text>
+      <text x="500" y="300" font-family="Liberation Sans" font-weight="bold" font-size="80" fill="${palette.colors.textMain}" letter-spacing="-1">nixos-gateway</text>
+      <text x="505" y="360" font-family="Liberation Sans" font-weight="normal" font-size="30" fill="${palette.colors.primaryLight}">Declarative &#x2022; Scalable &#x2022; High-Performance</text>
+      <text x="505" y="410" font-family="Liberation Sans" font-weight="normal" font-size="22" fill="${palette.colors.textMuted}" opacity="0.9">The ultimate enterprise edge routing and security platform</text>
+      <text x="505" y="445" font-family="Liberation Sans" font-weight="normal" font-size="22" fill="${palette.colors.textMuted}" opacity="0.9">built on NixOS.</text>
     </svg>
   '';
 
@@ -102,10 +84,22 @@ let
       cp ${logoSvg}          $out/assets/logo.svg
       cp ${socialPreviewSvg} $out/assets/social-preview.svg
 
-      # PNG conversions — point resvg at Liberation Sans so sandbox text renders
-      export FONTCONFIG_FILE=${fontconf}
-      resvg ${logoSvg}          $out/assets/logo.png
-      resvg ${socialPreviewSvg} $out/assets/social-preview.png
+      # PNG conversions — load Liberation Sans directly, skip system fonts
+      # so the sandbox build is hermetic and text always renders.
+      resvg \
+        --skip-system-fonts \
+        --use-fonts-dir ${fontDir} \
+        --font-family "Liberation Sans" \
+        --sans-serif-family "Liberation Sans" \
+        --background transparent \
+        ${logoSvg} $out/assets/logo.png
+
+      resvg \
+        --skip-system-fonts \
+        --use-fonts-dir ${fontDir} \
+        --font-family "Liberation Sans" \
+        --sans-serif-family "Liberation Sans" \
+        ${socialPreviewSvg} $out/assets/social-preview.png
     '';
 
 in pkgs.writeShellApplication {
@@ -114,8 +108,8 @@ in pkgs.writeShellApplication {
   text = ''
     dest="''${1:-assets}"
     mkdir -p "$dest"
-    cp ${assets}/assets/logo.svg        "$dest/logo.svg"
-    cp ${assets}/assets/logo.png        "$dest/logo.png"
+    cp ${assets}/assets/logo.svg           "$dest/logo.svg"
+    cp ${assets}/assets/logo.png           "$dest/logo.png"
     cp ${assets}/assets/social-preview.svg "$dest/social-preview.svg"
     cp ${assets}/assets/social-preview.png "$dest/social-preview.png"
     chmod u+w "$dest"/*.svg "$dest"/*.png
