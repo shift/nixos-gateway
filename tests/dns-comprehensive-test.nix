@@ -69,8 +69,8 @@ pkgs.testers.nixosTest {
     with subtest("Gateway Knot DNS service starts"):
         gateway.wait_for_unit("knot.service")
 
-    with subtest("DNS server is listening on port 53"):
-        gateway.wait_for_open_port(53)
+    with subtest("Knot DNS is listening on port 5353"):
+        gateway.wait_for_open_port(5353)
 
     with subtest("Knot DNS configuration is valid"):
         gateway.succeed("knotc conf-check")
