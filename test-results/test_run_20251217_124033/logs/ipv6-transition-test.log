@@ -1,0 +1,22 @@
+=== Test: ipv6-transition-test ===
+File: /home/shift/code/nixos-gateway/tests/ipv6-transition-test.nix
+Start Time: Wed 17 Dec 12:41:03 CET 2025
+
+error:
+       … from call site
+         at /home/shift/code/nixos-gateway/tests/ipv6-transition-test.nix:2:1:
+            1| # IPv6 Transition Mechanisms Test Suite
+            2| { pkgs, lib, ... }:
+             | ^
+            3|
+
+       error: function 'anonymous lambda' called without required argument 'pkgs'
+       at /home/shift/code/nixos-gateway/tests/ipv6-transition-test.nix:2:1:
+            1| # IPv6 Transition Mechanisms Test Suite
+            2| { pkgs, lib, ... }:
+             | ^
+            3|
+
+End Time: Wed 17 Dec 12:41:03 CET 2025
+Duration: 0s
+Exit Code: 1

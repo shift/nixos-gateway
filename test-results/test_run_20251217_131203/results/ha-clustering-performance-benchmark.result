@@ -1,0 +1,9 @@
+{
+  "test_name": "ha-clustering-performance-benchmark",
+  "test_file": "/home/shift/code/nixos-gateway/tests/ha-clustering-performance-benchmark.nix",
+  "status": "failed",
+  "exit_code": 1,
+  "start_time": 1765973536,
+  "end_time": 1765973536,
+  "log_file": "/home/shift/code/nixos-gateway/test-results/test_run_20251217_131203/logs/ha-clustering-performance-benchmark.log"
+}

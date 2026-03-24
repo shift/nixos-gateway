@@ -1,0 +1,7 @@
+{
+  "file": "/home/shift/code/nixos-gateway/tests/environment-overrides-simple.nix",
+  "features": "[\n  \"\"\n]",
+  "tasks": "[\n  \"\"\n]",
+  "description": "Create a simple test script",
+  "tags": []
+}

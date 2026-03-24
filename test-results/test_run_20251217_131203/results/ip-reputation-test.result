@@ -1,0 +1,9 @@
+{
+  "test_name": "ip-reputation-test",
+  "test_file": "/home/shift/code/nixos-gateway/tests/ip-reputation-test.nix",
+  "status": "failed",
+  "exit_code": 1,
+  "start_time": 1765973538,
+  "end_time": 1765973538,
+  "log_file": "/home/shift/code/nixos-gateway/test-results/test_run_20251217_131203/logs/ip-reputation-test.log"
+}

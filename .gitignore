@@ -1,0 +1,100 @@
+# Nix build artifacts
+result
+result-*
+
+# Direnv
+.direnv
+.envrc
+.envrc.*
+
+# Flakes
+# Uncomment if you want to lock dependencies
+# flake.lock
+
+# IDE and Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# OS-specific
+Thumbs.db
+*.tmp
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+tmp/
+temp/
+
+# Build artifacts
+dist/
+build/
+target/
+
+# Python (if used)
+__pycache__/
+*.py[cod]
+*$py.class
+.env
+.venv
+env/
+venv/
+
+# Rust (if used)
+Cargo.lock
+target/
+
+# Node.js (if used)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Backup files
+*.bak
+*.backup
+
+# Test results and evidence
+test-results/
+test-evidence/
+*.tar.gz
+*.pcap
+
+# Documentation build
+docs/_build/
+docs/build/
+
+# Coverage reports
+coverage/
+.coverage
+.nyc_output
+
+# Nix-specific
+.nixpkgs
+.nix-defexpr
+.nix-profile
+profile-*-link
+
+# Shell history
+.shell_history
+
+# Editor temporary files
+.#*
+\#*#
+
+# Cache directories
+.cache/
+.sbt/
+
+# Kernel modules build
+*.ko
+*.mod.*
+
+# Configuration backups
+*.cfg.bak
+*.conf.bak

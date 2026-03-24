@@ -1,0 +1,7 @@
+{
+  "file": "/home/shift/code/nixos-gateway/tests/qos-advanced-test.nix",
+  "features": "[\n  \"\"\n]",
+  "tasks": "[\n  \"\"\n]",
+  "description": "7. Verify Priority Handling",
+  "tags": []
+}

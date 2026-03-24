@@ -1,0 +1,7 @@
+{
+  "file": "/home/shift/code/nixos-gateway/tests/load-balancing-test.nix",
+  "features": "[\n  \"\"\n]",
+  "tasks": "[\n  \"\"\n]",
+  "description": "Verify Stream (UDP) config existence (harder to test functional UDP with python http server :P)",
+  "tags": []
+}

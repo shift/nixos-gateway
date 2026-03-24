@@ -1,0 +1,9 @@
+{
+  "test_name": "internet-gateway-test",
+  "test_file": "/home/shift/code/nixos-gateway/tests/internet-gateway-test.nix",
+  "status": "failed",
+  "exit_code": 1,
+  "start_time": 1765971903,
+  "end_time": 1765971903,
+  "log_file": "/home/shift/code/nixos-gateway/test-results/test_run_20251217_124415/logs/internet-gateway-test.log"
+}

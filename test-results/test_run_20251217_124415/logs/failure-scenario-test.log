@@ -1,0 +1,20 @@
+=== Test: failure-scenario-test ===
+File: /home/shift/code/nixos-gateway/tests/failure-scenario-test.nix
+Start Time: Wed 17 Dec 12:44:58 CET 2025
+
+error:
+       … from call site
+         at /home/shift/code/nixos-gateway/tests/failure-scenario-test.nix:1:1:
+            1| { pkgs, system ? builtins.currentSystem, ... }:
+             | ^
+            2|
+
+       error: function 'anonymous lambda' called without required argument 'pkgs'
+       at /home/shift/code/nixos-gateway/tests/failure-scenario-test.nix:1:1:
+            1| { pkgs, system ? builtins.currentSystem, ... }:
+             | ^
+            2|
+
+End Time: Wed 17 Dec 12:44:59 CET 2025
+Duration: 1s
+Exit Code: 1

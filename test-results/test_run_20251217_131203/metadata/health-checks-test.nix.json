@@ -1,0 +1,7 @@
+{
+  "file": "/home/shift/code/nixos-gateway/tests/health-checks-test.nix",
+  "features": "[\n  \"\"\n]",
+  "tasks": "[\n  \"\"\n]",
+  "description": "Verify that health check scripts have correct content",
+  "tags": []
+}

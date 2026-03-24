@@ -1,0 +1,9 @@
+{
+  "test_name": "ci-cd",
+  "test_file": "/home/shift/code/nixos-gateway/tests/ci-cd.nix",
+  "status": "passed",
+  "exit_code": 0,
+  "start_time": 1765971643,
+  "end_time": 1765971643,
+  "log_file": "/home/shift/code/nixos-gateway/test-results/test_run_20251217_124033/logs/ci-cd.log"
+}

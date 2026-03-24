@@ -1,0 +1,9 @@
+=== Test: config-reload-basic-test ===
+File: /home/shift/code/nixos-gateway/tests/config-reload-basic-test.nix
+Start Time: Wed 17 Dec 12:44:37 CET 2025
+
+/nix/store/p60fyn5fdx6d8wcsgmbycx73d3j8jpi5-config-reload-basic-test
+
+End Time: Wed 17 Dec 12:44:39 CET 2025
+Duration: 2s
+Exit Code: 0

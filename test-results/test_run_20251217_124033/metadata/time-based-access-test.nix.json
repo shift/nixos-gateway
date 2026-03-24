@@ -1,0 +1,7 @@
+{
+  "file": "/home/shift/code/nixos-gateway/tests/time-based-access-test.nix",
+  "features": "[\n  \"\"\n]",
+  "tasks": "[\n  \"\"\n]",
+  "description": "If the recurring pattern says Friday is open, exception \"open\" is redundant but confirms it.",
+  "tags": []
+}

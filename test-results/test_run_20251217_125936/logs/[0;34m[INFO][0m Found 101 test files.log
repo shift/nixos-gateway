@@ -1,0 +1,9 @@
+=== Test: [0;34m[INFO][0m Found 101 test files ===
+File: [0;34m[INFO][0m Found 101 test files
+Start Time: Wed 17 Dec 12:59:38 CET 2025
+
+error: path '/home/shift/code/nixos-gateway/[INFO] Found 101 test files' does not exist
+
+End Time: Wed 17 Dec 12:59:39 CET 2025
+Duration: 1s
+Exit Code: 1

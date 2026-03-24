@@ -1,0 +1,163 @@
+{
+  "test_run": {
+    "id": "test_run_20251217_124808",
+    "timestamp": "2025-12-17T12:48:08+01:00",
+    "git_commit": "7c3a565e877a0122a07144045a20729c617b5a68",
+    "git_branch": "main"
+  },
+  "summary": {
+    "total_tests": 103,
+    "passed_tests": 26,
+    "failed_tests": 77,
+    "skipped_tests": 0,
+    "success_rate": 0.25
+  },
+  "working_features": [
+    "backup-recovery-test",
+    "cdn-test", 
+    "ci-cd",
+    "config-reload-basic-test",
+    "disaster-recovery-test",
+    "drift-detection-test",
+    "environment-overrides-eval",
+    "environment-overrides-simple",
+    "failure-scenarios",
+    "ha-cluster-test",
+    "ha-clustering-performance-benchmark",
+    "load-balancing-test",
+    "log-aggregation-test",
+    "malware-detection-test",
+    "mock-gateway-options",
+    "multi-node",
+    "performance-benchmarking",
+    "sdwan-performance-benchmark",
+    "state-sync-test",
+    "test-utils",
+    "topology-generator-test",
+    "troubleshooting-trees-test",
+    "validator-test",
+    "vrf-performance-benchmark",
+    "ip-reputation-test",
+    "security-pentest-monitor"
+  ],
+  "failure_patterns": {
+    "missing_pkgs_parameter": {
+      "count": 50,
+      "error": "function 'anonymous lambda' called without required argument 'pkgs'",
+      "solution": "Fix test runner to pass pkgs parameter"
+    },
+    "undefined_config_variable": {
+      "count": 5,
+      "error": "undefined variable 'config'",
+      "solution": "Ensure proper NixOS module evaluation context"
+    },
+    "syntax_errors": {
+      "count": 5,
+      "error": "Various syntax errors (missing semicolons, etc.)",
+      "solution": "Fix syntax in individual test files"
+    },
+    "invalid_test_discovery": {
+      "count": 2,
+      "error": "Test runner discovering log messages as tests",
+      "solution": "Improve test discovery filtering"
+    }
+  },
+  "feature_coverage": {
+    "backup_recovery": {
+      "total": 2,
+      "passed": 2,
+      "rate": 1.0
+    },
+    "performance_testing": {
+      "total": 6,
+      "passed": 5,
+      "rate": 0.83
+    },
+    "core_infrastructure": {
+      "total": 8,
+      "passed": 6,
+      "rate": 0.75
+    },
+    "security_monitoring": {
+      "total": 4,
+      "passed": 2,
+      "rate": 0.5
+    },
+    "networking": {
+      "total": 15,
+      "passed": 0,
+      "rate": 0.0
+    },
+    "vpn_connectivity": {
+      "total": 8,
+      "passed": 0,
+      "rate": 0.0
+    },
+    "security_features": {
+      "total": 7,
+      "passed": 0,
+      "rate": 0.0
+    },
+    "advanced_features": {
+      "total": 12,
+      "passed": 0,
+      "rate": 0.0
+    },
+    "bgp_routing": {
+      "total": 6,
+      "passed": 0,
+      "rate": 0.0
+    }
+  },
+  "action_items": {
+    "priority_1": [
+      "Fix pkgs parameter passing in test runner",
+      "Improve test discovery to exclude non-test files",
+      "Standardize test signatures across all test files"
+    ],
+    "priority_2": [
+      "Fix syntax errors in 5 identified test files",
+      "Validate Nix syntax for all test files",
+      "Add syntax checking to CI pipeline"
+    ],
+    "priority_3": [
+      "Fix config variable access in module tests",
+      "Ensure proper NixOS module evaluation context",
+      "Standardize module testing patterns"
+    ],
+    "priority_4": [
+      "Fix networking tests (15 tests)",
+      "Fix VPN tests (8 tests)",
+      "Fix security tests (7 tests)",
+      "Fix BGP tests (6 tests)"
+    ]
+  },
+  "success_metrics": {
+    "short_term": {
+      "target_success_rate": 0.60,
+      "timeline": "1 week"
+    },
+    "medium_term": {
+      "target_success_rate": 0.80,
+      "timeline": "2-4 weeks"
+    },
+    "long_term": {
+      "target_success_rate": 0.95,
+      "timeline": "1-2 months"
+    }
+  },
+  "risk_assessment": {
+    "high_risk": [
+      "Test infrastructure issues blocking majority of tests",
+      "Module context problems with NixOS evaluation"
+    ],
+    "medium_risk": [
+      "Feature complexity requiring additional development",
+      "Integration testing complexity for multi-service interactions"
+    ],
+    "low_risk": [
+      "Syntax issues easily fixable with tooling",
+      "Well-understood NixOS testing patterns available"
+    ]
+  }
+}

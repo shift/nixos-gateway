@@ -1,0 +1,9 @@
+{
+  "test_name": "bgp-direct-test",
+  "test_file": "/home/shift/code/nixos-gateway/tests/bgp-direct-test.nix",
+  "status": "failed",
+  "exit_code": 1,
+  "start_time": 1765974729,
+  "end_time": 1765974741,
+  "log_file": "/home/shift/code/nixos-gateway/test-results/test_run_20251217_133031/logs/bgp-direct-test.log"
+}

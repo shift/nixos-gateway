@@ -1,0 +1,7 @@
+{
+  "file": "/home/shift/code/nixos-gateway/tests/task-verification-test.nix",
+  "features": "[\n  \"\"\n]",
+  "tasks": "[\n  \"01\",\n  \"02\",\n  \"03\"\n]",
+  "description": "Test Implementation",
+  "tags": []
+}

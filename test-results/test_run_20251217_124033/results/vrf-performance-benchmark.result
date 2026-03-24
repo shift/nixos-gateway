@@ -1,0 +1,9 @@
+{
+  "test_name": "vrf-performance-benchmark",
+  "test_file": "/home/shift/code/nixos-gateway/tests/vrf-performance-benchmark.nix",
+  "status": "passed",
+  "exit_code": 0,
+  "start_time": 1765971681,
+  "end_time": 1765971682,
+  "log_file": "/home/shift/code/nixos-gateway/test-results/test_run_20251217_124033/logs/vrf-performance-benchmark.log"
+}

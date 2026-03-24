@@ -1,0 +1,9 @@
+{
+  "test_name": "security-networking-integration-test",
+  "test_file": "/home/shift/code/nixos-gateway/tests/security-networking-integration-test.nix",
+  "status": "failed",
+  "exit_code": 1,
+  "start_time": 1765972142,
+  "end_time": 1765972142,
+  "log_file": "/home/shift/code/nixos-gateway/test-results/test_run_20251217_124808/logs/security-networking-integration-test.log"
+}

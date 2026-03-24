@@ -1,0 +1,9 @@
+{
+  "test_name": "container-network-policy-test",
+  "test_file": "/home/shift/code/nixos-gateway/tests/container-network-policy-test.nix",
+  "status": "passed",
+  "exit_code": 0,
+  "start_time": 1765976369,
+  "end_time": 1765976382,
+  "log_file": "/home/shift/code/nixos-gateway/test-results/test_run_20251217_135501/logs/container-network-policy-test.log"
+}

@@ -1,0 +1,9 @@
+{
+  "test_name": "multi-node",
+  "test_file": "/home/shift/code/nixos-gateway/tests/multi-node.nix",
+  "status": "passed",
+  "exit_code": 0,
+  "start_time": 1765972134,
+  "end_time": 1765972134,
+  "log_file": "/home/shift/code/nixos-gateway/test-results/test_run_20251217_124808/logs/multi-node.log"
+}

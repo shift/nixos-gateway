@@ -1,0 +1,7 @@
+{
+  "file": "/home/shift/code/nixos-gateway/tests/device-bandwidth-test.nix",
+  "features": "[\n  \"\"\n]",
+  "tasks": "[\n  \"\"\n]",
+  "description": "Guest Phone (IP 200 -> Mark 2001/0x7d1)",
+  "tags": []
+}

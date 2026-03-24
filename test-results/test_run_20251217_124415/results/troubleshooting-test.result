@@ -1,0 +1,9 @@
+{
+  "test_name": "troubleshooting-test",
+  "test_file": "/home/shift/code/nixos-gateway/tests/troubleshooting-test.nix",
+  "status": "failed",
+  "exit_code": 1,
+  "start_time": 1765971939,
+  "end_time": 1765971940,
+  "log_file": "/home/shift/code/nixos-gateway/test-results/test_run_20251217_124415/logs/troubleshooting-test.log"
+}

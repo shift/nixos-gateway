@@ -1,0 +1,16 @@
+=== Test: nat-gateway-test ===
+File: /home/shift/code/nixos-gateway/tests/nat-gateway-test.nix
+Start Time: Wed 17 Dec 13:12:21 CET 2025
+
+[0;34m[INFO][0m Running NixOS VM test: nat-gateway-test
+warning: Git tree '/home/shift/code/nixos-gateway' is dirty
+error: undefined variable 'lib'
+       at /home/shift/code/nixos-gateway/flake.nix:208:24:
+          207|               map (testFile: {
+          208|                 name = lib.strings.sanitizeDerivationName (builtins.baseNameOf (lib.strings.removeSuffix ".nix" testFile));
+             |                        ^
+          209|                 value = mkTest testFile;
+
+End Time: Wed 17 Dec 13:12:21 CET 2025
+Duration: 0s
+Exit Code: 1

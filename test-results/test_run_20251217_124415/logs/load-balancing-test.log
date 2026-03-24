@@ -1,0 +1,8 @@
+=== Test: load-balancing-test ===
+File: /home/shift/code/nixos-gateway/tests/load-balancing-test.nix
+Start Time: Wed 17 Dec 12:45:12 CET 2025
+
+
+End Time: Wed 17 Dec 12:45:13 CET 2025
+Duration: 1s
+Exit Code: 0

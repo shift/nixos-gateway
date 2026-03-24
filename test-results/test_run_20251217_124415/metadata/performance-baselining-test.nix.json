@@ -1,0 +1,7 @@
+{
+  "file": "/home/shift/code/nixos-gateway/tests/performance-baselining-test.nix",
+  "features": "[\n  \"\"\n]",
+  "tasks": "[\n  \"\"\n]",
+  "description": "For now, ensuring the service runs successfully multiple times without error is the key integration test.",
+  "tags": []
+}

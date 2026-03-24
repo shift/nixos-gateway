@@ -1,0 +1,14 @@
+=== Test: nat-gateway-test ===
+File: /home/shift/code/nixos-gateway/tests/nat-gateway-test.nix
+Start Time: Wed 17 Dec 12:48:55 CET 2025
+
+error: syntax error, unexpected '>'
+       at /home/shift/code/nixos-gateway/tests/nat-gateway-test.nix:304:11:
+          303|   '';
+          304| }</content>
+             |           ^
+          305| <parameter name="filePath">lib/nat-monitoring.nix
+
+End Time: Wed 17 Dec 12:48:56 CET 2025
+Duration: 1s
+Exit Code: 1

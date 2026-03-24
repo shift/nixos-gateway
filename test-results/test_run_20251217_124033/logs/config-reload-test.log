@@ -1,0 +1,27 @@
+=== Test: config-reload-test ===
+File: /home/shift/code/nixos-gateway/tests/config-reload-test.nix
+Start Time: Wed 17 Dec 12:40:46 CET 2025
+
+error:
+       … while evaluating the attribute 'drvPath'
+         at /nix/store/hv75f9nfqbxm7v4xjp0xngdjrf8xnvyq-source/lib/customisation.nix:429:7:
+          428|     // {
+          429|       drvPath =
+             |       ^
+          430|         assert condition;
+
+       … while calling the 'derivationStrict' builtin
+         at <nix/derivation-internal.nix>:37:12:
+           36|
+           37|   strict = derivationStrict drvAttrs;
+             |            ^
+           38|
+
+       (stack trace truncated; use '--show-trace' to show the full, detailed trace)
+
+       error: The option `nodes.gateway.services.gateway.enable' does not exist. Definition values:
+       - In `makeTest parameters': true
+
+End Time: Wed 17 Dec 12:40:51 CET 2025
+Duration: 5s
+Exit Code: 1

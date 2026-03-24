@@ -1,0 +1,149 @@
+[0;35m=== NixOS Gateway Test Runner - Fixed ===[0m
+[0;34m[INFO][0m Starting test run: test_run_20251217_131203
+[0;35m=== Initializing Test Environment ===[0m
+[0;34m[INFO][0m Test environment initialized
+[0;34m[INFO][0m Log directory: /home/shift/code/nixos-gateway/test-results/test_run_20251217_131203
+[0;35m=== Discovering Tests ===[0m
+[0;34m[INFO][0m Found 85 valid test files
+[0;34m[INFO][0m Found 87 tests to run
+[0;34m[INFO][0m Running test: [0;35m=== Discovering Tests ===[0m
+[0;34m[INFO][0m Running simple Nix evaluation: [0;35m=== Discovering Tests ===[0m
+[0;31m[ERROR][0m ✗ [0;35m=== Discovering Tests ===[0m FAILED
+[0;34m[INFO][0m Running test: [0;34m[INFO][0m Found 85 valid test files
+[0;34m[INFO][0m Running simple Nix evaluation: [0;34m[INFO][0m Found 85 valid test files
+[0;31m[ERROR][0m ✗ [0;34m[INFO][0m Found 85 valid test files FAILED
+[0;34m[INFO][0m Running test: advanced-health-monitoring-test
+[0;34m[INFO][0m Running NixOS VM test: advanced-health-monitoring-test
+[0;31m[ERROR][0m ✗ advanced-health-monitoring-test FAILED
+[0;34m[INFO][0m Running test: advanced-networking-management-integration-test
+[0;34m[INFO][0m Running NixOS VM test: advanced-networking-management-integration-test
+[0;31m[ERROR][0m ✗ advanced-networking-management-integration-test FAILED
+[0;34m[INFO][0m Running test: advanced-networking-test
+[0;34m[INFO][0m Running simple Nix evaluation: advanced-networking-test
+[0;31m[ERROR][0m ✗ advanced-networking-test FAILED
+[0;34m[INFO][0m Running test: api-gateway-test
+[0;34m[INFO][0m Running NixOS VM test: api-gateway-test
+[0;31m[ERROR][0m ✗ api-gateway-test FAILED
+[0;34m[INFO][0m Running test: backup-recovery-test
+[0;34m[INFO][0m Running NixOS VM test: backup-recovery-test
+[0;31m[ERROR][0m ✗ backup-recovery-test FAILED
+[0;34m[INFO][0m Running test: basic-gateway-test
+[0;34m[INFO][0m Running NixOS VM test: basic-gateway-test
+[0;31m[ERROR][0m ✗ basic-gateway-test FAILED
+[0;34m[INFO][0m Running test: basic-test
+[0;34m[INFO][0m Running NixOS VM test: basic-test
+[0;31m[ERROR][0m ✗ basic-test FAILED
+[0;34m[INFO][0m Running test: bgp-basic-test
+[0;34m[INFO][0m Running NixOS VM test: bgp-basic-test
+[0;31m[ERROR][0m ✗ bgp-basic-test FAILED
+[0;34m[INFO][0m Running test: bgp-direct-test
+[0;34m[INFO][0m Running NixOS VM test: bgp-direct-test
+[0;31m[ERROR][0m ✗ bgp-direct-test FAILED
+[0;34m[INFO][0m Running test: bgp-enhanced-test
+[0;34m[INFO][0m Running NixOS VM test: bgp-enhanced-test
+[0;31m[ERROR][0m ✗ bgp-enhanced-test FAILED
+[0;34m[INFO][0m Running test: bgp-isolated-test
+[0;34m[INFO][0m Running NixOS VM test: bgp-isolated-test
+[0;31m[ERROR][0m ✗ bgp-isolated-test FAILED
+[0;34m[INFO][0m Running test: bgp-minimal-test
+[0;34m[INFO][0m Running NixOS VM test: bgp-minimal-test
+[0;31m[ERROR][0m ✗ bgp-minimal-test FAILED
+[0;34m[INFO][0m Running test: bgp-routing-test
+[0;34m[INFO][0m Running NixOS VM test: bgp-routing-test
+[0;31m[ERROR][0m ✗ bgp-routing-test FAILED
+[0;34m[INFO][0m Running test: byoip-bgp-test
+[0;34m[INFO][0m Running NixOS VM test: byoip-bgp-test
+[0;31m[ERROR][0m ✗ byoip-bgp-test FAILED
+[0;34m[INFO][0m Running test: cdn-test
+[0;34m[INFO][0m Running NixOS VM test: cdn-test
+[0;31m[ERROR][0m ✗ cdn-test FAILED
+[0;34m[INFO][0m Running test: config-diff-test
+[0;34m[INFO][0m Running NixOS VM test: config-diff-test
+[0;31m[ERROR][0m ✗ config-diff-test FAILED
+[0;34m[INFO][0m Running test: config-reload-test
+[0;34m[INFO][0m Running NixOS VM test: config-reload-test
+[0;31m[ERROR][0m ✗ config-reload-test FAILED
+[0;34m[INFO][0m Running test: container-network-policy-test
+[0;34m[INFO][0m Running NixOS VM test: container-network-policy-test
+[0;31m[ERROR][0m ✗ container-network-policy-test FAILED
+[0;34m[INFO][0m Running test: debug-mode-test
+[0;34m[INFO][0m Running NixOS VM test: debug-mode-test
+[0;31m[ERROR][0m ✗ debug-mode-test FAILED
+[0;34m[INFO][0m Running test: device-bandwidth-test
+[0;34m[INFO][0m Running NixOS VM test: device-bandwidth-test
+[0;31m[ERROR][0m ✗ device-bandwidth-test FAILED
+[0;34m[INFO][0m Running test: device-posture-test
+[0;34m[INFO][0m Running NixOS VM test: device-posture-test
+[0;31m[ERROR][0m ✗ device-posture-test FAILED
+[0;34m[INFO][0m Running test: diff-preview-test
+[0;34m[INFO][0m Running NixOS VM test: diff-preview-test
+[0;31m[ERROR][0m ✗ diff-preview-test FAILED
+[0;34m[INFO][0m Running test: direct-connect-test
+[0;34m[INFO][0m Running NixOS VM test: direct-connect-test
+[0;31m[ERROR][0m ✗ direct-connect-test FAILED
+[0;34m[INFO][0m Running test: disaster-recovery-test
+[0;34m[INFO][0m Running NixOS VM test: disaster-recovery-test
+[0;31m[ERROR][0m ✗ disaster-recovery-test FAILED
+[0;34m[INFO][0m Running test: distributed-tracing-test
+[0;34m[INFO][0m Running NixOS VM test: distributed-tracing-test
+[0;31m[ERROR][0m ✗ distributed-tracing-test FAILED
+[0;34m[INFO][0m Running test: dns-dhcp-test
+[0;34m[INFO][0m Running NixOS VM test: dns-dhcp-test
+[0;31m[ERROR][0m ✗ dns-dhcp-test FAILED
+[0;34m[INFO][0m Running test: drift-detection-test
+[0;34m[INFO][0m Running NixOS VM test: drift-detection-test
+[0;31m[ERROR][0m ✗ drift-detection-test FAILED
+[0;34m[INFO][0m Running test: failure-scenarios
+[0;34m[INFO][0m Running NixOS VM test: failure-scenarios
+[0;31m[ERROR][0m ✗ failure-scenarios FAILED
+[0;34m[INFO][0m Running test: failure-scenario-test
+[0;34m[INFO][0m Running NixOS VM test: failure-scenario-test
+[0;31m[ERROR][0m ✗ failure-scenario-test FAILED
+[0;34m[INFO][0m Running test: ha-clustering-performance-benchmark
+[0;34m[INFO][0m Running NixOS VM test: ha-clustering-performance-benchmark
+[0;31m[ERROR][0m ✗ ha-clustering-performance-benchmark FAILED
+[0;34m[INFO][0m Running test: ha-cluster-test
+[0;34m[INFO][0m Running NixOS VM test: ha-cluster-test
+[0;31m[ERROR][0m ✗ ha-cluster-test FAILED
+[0;34m[INFO][0m Running test: hardware-test
+[0;34m[INFO][0m Running NixOS VM test: hardware-test
+[0;31m[ERROR][0m ✗ hardware-test FAILED
+[0;34m[INFO][0m Running test: health-checks-test
+[0;34m[INFO][0m Running NixOS VM test: health-checks-test
+[0;31m[ERROR][0m ✗ health-checks-test FAILED
+[0;34m[INFO][0m Running test: interactive-tutorials-test
+[0;34m[INFO][0m Running NixOS VM test: interactive-tutorials-test
+[0;31m[ERROR][0m ✗ interactive-tutorials-test FAILED
+[0;34m[INFO][0m Running test: internet-gateway-test
+[0;34m[INFO][0m Running NixOS VM test: internet-gateway-test
+[0;31m[ERROR][0m ✗ internet-gateway-test FAILED
+[0;34m[INFO][0m Running test: ip-reputation-test
+[0;34m[INFO][0m Running NixOS VM test: ip-reputation-test
+[0;31m[ERROR][0m ✗ ip-reputation-test FAILED
+[0;34m[INFO][0m Running test: ipv6-transition-test
+[0;34m[INFO][0m Running NixOS VM test: ipv6-transition-test
+[0;31m[ERROR][0m ✗ ipv6-transition-test FAILED
+[0;34m[INFO][0m Running test: load-balancing-test
+[0;34m[INFO][0m Running NixOS VM test: load-balancing-test
+[0;31m[ERROR][0m ✗ load-balancing-test FAILED
+[0;34m[INFO][0m Running test: log-aggregation-test
+[0;34m[INFO][0m Running NixOS VM test: log-aggregation-test
+[0;31m[ERROR][0m ✗ log-aggregation-test FAILED
+[0;34m[INFO][0m Running test: malware-detection-test
+[0;34m[INFO][0m Running NixOS VM test: malware-detection-test
+[0;31m[ERROR][0m ✗ malware-detection-test FAILED
+[0;34m[INFO][0m Running test: minimal-schema-test
+[0;34m[INFO][0m Running NixOS VM test: minimal-schema-test
+[0;31m[ERROR][0m ✗ minimal-schema-test FAILED
+[0;34m[INFO][0m Running test: multi-node
+[0;34m[INFO][0m Running NixOS VM test: multi-node
+[0;31m[ERROR][0m ✗ multi-node FAILED
+[0;34m[INFO][0m Running test: multi-node-test
+[0;34m[INFO][0m Running NixOS VM test: multi-node-test
+[0;31m[ERROR][0m ✗ multi-node-test FAILED
+[0;34m[INFO][0m Running test: nac-test
+[0;34m[INFO][0m Running NixOS VM test: nac-test
+[0;31m[ERROR][0m ✗ nac-test FAILED
+[0;34m[INFO][0m Running test: nat-gateway-test
+[0;34m[INFO][0m Running NixOS VM test: nat-gateway-test
+[0;31m[ERROR][0m ✗ nat-gateway-test FAILED

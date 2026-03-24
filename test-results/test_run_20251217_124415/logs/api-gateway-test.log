@@ -1,0 +1,20 @@
+=== Test: api-gateway-test ===
+File: /home/shift/code/nixos-gateway/tests/api-gateway-test.nix
+Start Time: Wed 17 Dec 12:44:20 CET 2025
+
+error:
+       … from call site
+         at /home/shift/code/nixos-gateway/tests/api-gateway-test.nix:1:1:
+            1| {
+             | ^
+            2|   config,
+
+       error: function 'anonymous lambda' called without required argument 'config'
+       at /home/shift/code/nixos-gateway/tests/api-gateway-test.nix:1:1:
+            1| {
+             | ^
+            2|   config,
+
+End Time: Wed 17 Dec 12:44:20 CET 2025
+Duration: 0s
+Exit Code: 1

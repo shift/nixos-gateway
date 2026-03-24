@@ -1,0 +1,14 @@
+=== Test: security-features-test ===
+File: /home/shift/code/nixos-gateway/tests/security-features-test.nix
+Start Time: Wed 17 Dec 12:45:28 CET 2025
+
+error: undefined variable 'config'
+       at /home/shift/code/nixos-gateway/tests/security-features-test.nix:103:19:
+          102|       description = "Zero Trust should be enabled";
+          103|       assertion = config.services.gateway.zeroTrust.enable == true;
+             |                   ^
+          104|     }
+
+End Time: Wed 17 Dec 12:45:29 CET 2025
+Duration: 1s
+Exit Code: 1

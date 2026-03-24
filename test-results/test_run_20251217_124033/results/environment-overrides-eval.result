@@ -1,0 +1,9 @@
+{
+  "test_name": "environment-overrides-eval",
+  "test_file": "/home/shift/code/nixos-gateway/tests/environment-overrides-eval.nix",
+  "status": "passed",
+  "exit_code": 0,
+  "start_time": 1765971655,
+  "end_time": 1765971655,
+  "log_file": "/home/shift/code/nixos-gateway/test-results/test_run_20251217_124033/logs/environment-overrides-eval.log"
+}

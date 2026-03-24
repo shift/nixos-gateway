@@ -1,0 +1,9 @@
+{
+  "test_name": "config-diff-test",
+  "test_file": "/home/shift/code/nixos-gateway/tests/config-diff-test.nix",
+  "status": "failed",
+  "exit_code": 1,
+  "start_time": 1765972106,
+  "end_time": 1765972107,
+  "log_file": "/home/shift/code/nixos-gateway/test-results/test_run_20251217_124808/logs/config-diff-test.log"
+}

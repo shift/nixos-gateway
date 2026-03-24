@@ -1,0 +1,9 @@
+{
+  "test_name": "test-utils",
+  "test_file": "/home/shift/code/nixos-gateway/tests/test-utils.nix",
+  "status": "passed",
+  "exit_code": 0,
+  "start_time": 1765972149,
+  "end_time": 1765972149,
+  "log_file": "/home/shift/code/nixos-gateway/test-results/test_run_20251217_124808/logs/test-utils.log"
+}

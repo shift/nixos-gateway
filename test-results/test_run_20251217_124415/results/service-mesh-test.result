@@ -1,0 +1,9 @@
+{
+  "test_name": "service-mesh-test",
+  "test_file": "/home/shift/code/nixos-gateway/tests/service-mesh-test.nix",
+  "status": "failed",
+  "exit_code": 1,
+  "start_time": 1765971932,
+  "end_time": 1765971932,
+  "log_file": "/home/shift/code/nixos-gateway/test-results/test_run_20251217_124415/logs/service-mesh-test.log"
+}

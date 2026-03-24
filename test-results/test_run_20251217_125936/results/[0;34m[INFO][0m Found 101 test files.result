@@ -1,0 +1,9 @@
+{
+  "test_name": "[0;34m[INFO][0m Found 101 test files",
+  "test_file": "[0;34m[INFO][0m Found 101 test files",
+  "status": "failed",
+  "exit_code": 1,
+  "start_time": 1765972778,
+  "end_time": 1765972779,
+  "log_file": "/home/shift/code/nixos-gateway/test-results/test_run_20251217_125936/logs/[0;34m[INFO][0m Found 101 test files.log"
+}

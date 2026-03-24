@@ -1,0 +1,17 @@
+=== Test: ci-cd-test ===
+File: /home/shift/code/nixos-gateway/tests/ci-cd-test.nix
+Start Time: Wed 17 Dec 12:40:43 CET 2025
+
+error: cannot evaluate a function that has an argument without a value ('pkgs')
+       Nix attempted to evaluate a function as a top level expression; in
+       this case it must have its arguments supplied either by default
+       values, or passed explicitly with '--arg' or '--argstr'. See
+       https://nix.dev/manual/nix/stable/language/syntax.html#functions.
+       at /home/shift/code/nixos-gateway/tests/ci-cd-test.nix:1:3:
+            1| { pkgs, lib }:
+             |   ^
+            2|
+
+End Time: Wed 17 Dec 12:40:44 CET 2025
+Duration: 1s
+Exit Code: 1

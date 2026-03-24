@@ -1,0 +1,9 @@
+{
+  "test_name": "cdn-test",
+  "test_file": "/home/shift/code/nixos-gateway/tests/cdn-test.nix",
+  "status": "passed",
+  "exit_code": 0,
+  "start_time": 1765972101,
+  "end_time": 1765972104,
+  "log_file": "/home/shift/code/nixos-gateway/test-results/test_run_20251217_124808/logs/cdn-test.log"
+}

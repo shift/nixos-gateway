@@ -1,0 +1,67 @@
+{
+  "requirement_quality": {
+    "min_scenarios_per_requirement": 2,
+    "max_requirement_length": 500,
+    "min_requirement_length": 20,
+    "max_line_length": 120,
+    "require_normative_language": true,
+    "forbidden_phrases": [
+      "etc\.",
+      "and so on",
+      "various",
+      "TBD",
+      "TODO",
+      "tbd",
+      "todo"
+    ],
+    "passive_voice_patterns": [
+      "should be",
+      "can be",
+      "will be",
+      "must be"
+    ],
+    "weasel_words": [
+      "typically",
+      "usually",
+      "often",
+      "sometimes",
+      "may be",
+      "could be"
+    ]
+  },
+  "task_quality": {
+    "min_completion_percentage": 30,
+    "max_vague_tasks": 0,
+    "require_estimated_effort": false
+  },
+  "proposal_quality": {
+    "required_sections": [
+      "## Why",
+      "## What Changes",
+      "## Impact"
+    ],
+    "min_impact_analysis": 3,
+    "require_breaking_change_markers": true
+  },
+  "design_quality": {
+    "required_sections": [
+      "## Context",
+      "## Goals / Non-Goals",
+      "## Decisions",
+      "## Risks / Trade-offs"
+    ],
+    "min_decision_rationale": 1,
+    "min_risk_analysis": 1
+  },
+  "scenario_quality": {
+    "require_when_then_format": true,
+    "min_scenario_length": 10,
+    "max_scenario_length": 200,
+    "require_testable_conditions": true
+  },
+  "coverage_quality": {
+    "min_requirement_coverage": 80,
+    "min_scenario_coverage": 90,
+    "require_edge_case_coverage": true
+  }
+}

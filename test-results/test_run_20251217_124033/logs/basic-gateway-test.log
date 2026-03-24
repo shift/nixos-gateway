@@ -1,0 +1,14 @@
+=== Test: basic-gateway-test ===
+File: /home/shift/code/nixos-gateway/tests/basic-gateway-test.nix
+Start Time: Wed 17 Dec 12:40:36 CET 2025
+
+error: undefined variable 'config'
+       at /home/shift/code/nixos-gateway/tests/basic-gateway-test.nix:48:19:
+           47|       description = "Gateway should be enabled";
+           48|       assertion = config.services.gateway.enable == true;
+             |                   ^
+           49|     }
+
+End Time: Wed 17 Dec 12:40:37 CET 2025
+Duration: 1s
+Exit Code: 1

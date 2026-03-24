@@ -1,0 +1,9 @@
+{
+  "test_name": "bgp-enhanced-test",
+  "test_file": "/home/shift/code/nixos-gateway/tests/bgp-enhanced-test.nix",
+  "status": "passed",
+  "exit_code": 0,
+  "start_time": 1765976243,
+  "end_time": 1765976258,
+  "log_file": "/home/shift/code/nixos-gateway/test-results/test_run_20251217_135501/logs/bgp-enhanced-test.log"
+}

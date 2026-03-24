@@ -1,0 +1,9 @@
+{
+  "test_name": "nat-gateway-test",
+  "test_file": "/home/shift/code/nixos-gateway/tests/nat-gateway-test.nix",
+  "status": "failed",
+  "exit_code": 1,
+  "start_time": 1765971919,
+  "end_time": 1765971919,
+  "log_file": "/home/shift/code/nixos-gateway/test-results/test_run_20251217_124415/logs/nat-gateway-test.log"
+}

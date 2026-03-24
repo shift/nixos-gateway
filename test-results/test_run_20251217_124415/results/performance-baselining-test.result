@@ -1,0 +1,9 @@
+{
+  "test_name": "performance-baselining-test",
+  "test_file": "/home/shift/code/nixos-gateway/tests/performance-baselining-test.nix",
+  "status": "failed",
+  "exit_code": 1,
+  "start_time": 1765971920,
+  "end_time": 1765971920,
+  "log_file": "/home/shift/code/nixos-gateway/test-results/test_run_20251217_124415/logs/performance-baselining-test.log"
+}

@@ -1,0 +1,9 @@
+{
+  "test_name": "minimal-schema-test",
+  "test_file": "/home/shift/code/nixos-gateway/tests/minimal-schema-test.nix",
+  "status": "failed",
+  "exit_code": 1,
+  "start_time": 1765973540,
+  "end_time": 1765973540,
+  "log_file": "/home/shift/code/nixos-gateway/test-results/test_run_20251217_131203/logs/minimal-schema-test.log"
+}

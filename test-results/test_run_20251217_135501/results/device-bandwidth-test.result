@@ -1,0 +1,9 @@
+{
+  "test_name": "device-bandwidth-test",
+  "test_file": "/home/shift/code/nixos-gateway/tests/device-bandwidth-test.nix",
+  "status": "passed",
+  "exit_code": 0,
+  "start_time": 1765976394,
+  "end_time": 1765976407,
+  "log_file": "/home/shift/code/nixos-gateway/test-results/test_run_20251217_135501/logs/device-bandwidth-test.log"
+}

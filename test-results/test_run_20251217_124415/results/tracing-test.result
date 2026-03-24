@@ -1,0 +1,9 @@
+{
+  "test_name": "tracing-test",
+  "test_file": "/home/shift/code/nixos-gateway/tests/tracing-test.nix",
+  "status": "failed",
+  "exit_code": 1,
+  "start_time": 1765971938,
+  "end_time": 1765971939,
+  "log_file": "/home/shift/code/nixos-gateway/test-results/test_run_20251217_124415/logs/tracing-test.log"
+}

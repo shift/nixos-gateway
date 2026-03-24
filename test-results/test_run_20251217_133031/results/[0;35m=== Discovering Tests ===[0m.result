@@ -1,0 +1,9 @@
+{
+  "test_name": "[0;35m=== Discovering Tests ===[0m",
+  "test_file": "[0;35m=== Discovering Tests ===[0m",
+  "status": "failed",
+  "exit_code": 1,
+  "start_time": 1765974634,
+  "end_time": 1765974635,
+  "log_file": "/home/shift/code/nixos-gateway/test-results/test_run_20251217_133031/logs/[0;35m=== Discovering Tests ===[0m.log"
+}

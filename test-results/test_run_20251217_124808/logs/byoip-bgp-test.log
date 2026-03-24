@@ -1,0 +1,22 @@
+=== Test: byoip-bgp-test ===
+File: /home/shift/code/nixos-gateway/tests/byoip-bgp-test.nix
+Start Time: Wed 17 Dec 12:48:19 CET 2025
+
+error:
+       … from call site
+         at /home/shift/code/nixos-gateway/tests/byoip-bgp-test.nix:2:1:
+            1| # BYOIP BGP Peering Test
+            2| { pkgs, ... }:
+             | ^
+            3|
+
+       error: function 'anonymous lambda' called without required argument 'pkgs'
+       at /home/shift/code/nixos-gateway/tests/byoip-bgp-test.nix:2:1:
+            1| # BYOIP BGP Peering Test
+            2| { pkgs, ... }:
+             | ^
+            3|
+
+End Time: Wed 17 Dec 12:48:20 CET 2025
+Duration: 1s
+Exit Code: 1

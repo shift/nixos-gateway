@@ -1,0 +1,14 @@
+=== Test: xdp-performance-benchmark ===
+File: /home/shift/code/nixos-gateway/tests/xdp-performance-benchmark.nix
+Start Time: Wed 17 Dec 12:45:47 CET 2025
+
+error: syntax error, unexpected ')'
+       at /home/shift/code/nixos-gateway/tests/xdp-performance-benchmark.nix:261:15:
+          260|
+          261|     start_all()
+             |               ^
+          262|
+
+End Time: Wed 17 Dec 12:45:47 CET 2025
+Duration: 0s
+Exit Code: 1

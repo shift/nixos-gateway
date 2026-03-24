@@ -1,0 +1,9 @@
+{
+  "test_name": "bgp-isolated-test",
+  "test_file": "/home/shift/code/nixos-gateway/tests/bgp-isolated-test.nix",
+  "status": "failed",
+  "exit_code": 1,
+  "start_time": 1765972798,
+  "end_time": 1765972799,
+  "log_file": "/home/shift/code/nixos-gateway/test-results/test_run_20251217_125936/logs/bgp-isolated-test.log"
+}

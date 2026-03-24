@@ -1,0 +1,7 @@
+{
+  "file": "/home/shift/code/nixos-gateway/tests/dependency-test.nix",
+  "features": "[\n  \"\"\n]",
+  "tasks": "[\n  \"02\"\n]",
+  "description": "Check that basic networking is working",
+  "tags": []
+}

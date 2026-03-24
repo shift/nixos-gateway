@@ -1,0 +1,52 @@
+[0;35m=== NixOS Gateway Test Runner ===[0m
+[0;34m[INFO][0m Starting test run: test_run_20251217_125936
+[0;35m=== Initializing Test Environment ===[0m
+[0;34m[INFO][0m Test environment initialized
+[0;34m[INFO][0m Log directory: /home/shift/code/nixos-gateway/test-results/test_run_20251217_125936
+[0;35m=== Discovering Tests ===[0m
+[0;34m[INFO][0m Found 101 test files
+[0;34m[INFO][0m Found 103 tests to run
+[0;34m[INFO][0m Running test: [0;35m=== Discovering Tests ===[0m
+[0;31m[ERROR][0m ✗ [0;35m=== Discovering Tests ===[0m FAILED
+[0;34m[INFO][0m Running test: [0;34m[INFO][0m Found 101 test files
+[0;31m[ERROR][0m ✗ [0;34m[INFO][0m Found 101 test files FAILED
+[0;34m[INFO][0m Running test: advanced-health-monitoring-test
+[0;31m[ERROR][0m ✗ advanced-health-monitoring-test FAILED
+[0;34m[INFO][0m Running test: advanced-networking-management-integration-test
+[0;31m[ERROR][0m ✗ advanced-networking-management-integration-test FAILED
+[0;34m[INFO][0m Running test: advanced-networking-test
+[0;31m[ERROR][0m ✗ advanced-networking-test FAILED
+[0;34m[INFO][0m Running test: api-docs-test
+[0;31m[ERROR][0m ✗ api-docs-test FAILED
+[0;34m[INFO][0m Running test: api-gateway-test
+[0;31m[ERROR][0m ✗ api-gateway-test FAILED
+[0;34m[INFO][0m Running test: app-aware-qos-test
+[0;31m[ERROR][0m ✗ app-aware-qos-test FAILED
+[0;34m[INFO][0m Running test: backup-recovery-test
+[0;32m[SUCCESS][0m ✓ backup-recovery-test PASSED
+[0;34m[INFO][0m Running test: basic-gateway-test
+[0;31m[ERROR][0m ✗ basic-gateway-test FAILED
+[0;34m[INFO][0m Running test: basic-test
+[0;31m[ERROR][0m ✗ basic-test FAILED
+[0;34m[INFO][0m Running test: bgp-basic-test
+[0;31m[ERROR][0m ✗ bgp-basic-test FAILED
+[0;34m[INFO][0m Running test: bgp-direct-test
+[0;31m[ERROR][0m ✗ bgp-direct-test FAILED
+[0;34m[INFO][0m Running test: bgp-enhanced-test
+[0;31m[ERROR][0m ✗ bgp-enhanced-test FAILED
+[0;34m[INFO][0m Running test: bgp-isolated-test
+[0;31m[ERROR][0m ✗ bgp-isolated-test FAILED
+[0;34m[INFO][0m Running test: bgp-minimal-test
+[0;31m[ERROR][0m ✗ bgp-minimal-test FAILED
+[0;34m[INFO][0m Running test: bgp-routing-test
+[0;31m[ERROR][0m ✗ bgp-routing-test FAILED
+[0;34m[INFO][0m Running test: byoip-bgp-test
+[0;31m[ERROR][0m ✗ byoip-bgp-test FAILED
+[0;34m[INFO][0m Running test: cdn-test
+[0;32m[SUCCESS][0m ✓ cdn-test PASSED
+[0;34m[INFO][0m Running test: ci-cd
+[0;32m[SUCCESS][0m ✓ ci-cd PASSED
+[0;34m[INFO][0m Running test: ci-cd-test
+[0;31m[ERROR][0m ✗ ci-cd-test FAILED
+[0;34m[INFO][0m Running test: config-diff-test
+[0;31m[ERROR][0m ✗ config-diff-test FAILED

@@ -1,0 +1,7 @@
+{
+  "file": "/home/shift/code/nixos-gateway/tests/security-features-test.nix",
+  "features": "[\n  \"\"\n]",
+  "tasks": "[\n  \"22\",\n  \"23\",\n  \"24\",\n  \"25\",\n  \"26\"\n]",
+  "description": "Test validation",
+  "tags": []
+}

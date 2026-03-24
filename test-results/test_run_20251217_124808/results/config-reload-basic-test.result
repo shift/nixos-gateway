@@ -1,0 +1,9 @@
+{
+  "test_name": "config-reload-basic-test",
+  "test_file": "/home/shift/code/nixos-gateway/tests/config-reload-basic-test.nix",
+  "status": "passed",
+  "exit_code": 0,
+  "start_time": 1765972107,
+  "end_time": 1765972109,
+  "log_file": "/home/shift/code/nixos-gateway/test-results/test_run_20251217_124808/logs/config-reload-basic-test.log"
+}

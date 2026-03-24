@@ -1,0 +1,9 @@
+{
+  "test_name": "direct-connect-test",
+  "test_file": "/home/shift/code/nixos-gateway/tests/direct-connect-test.nix",
+  "status": "failed",
+  "exit_code": 1,
+  "start_time": 1765973533,
+  "end_time": 1765973534,
+  "log_file": "/home/shift/code/nixos-gateway/test-results/test_run_20251217_131203/logs/direct-connect-test.log"
+}

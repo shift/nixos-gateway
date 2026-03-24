@@ -1,0 +1,74 @@
+[0;35m=== NixOS Gateway Test Runner - Fixed ===[0m
+[0;34m[INFO][0m Starting test run: test_run_20251217_135501
+[0;35m=== Initializing Test Environment ===[0m
+[0;34m[INFO][0m Test environment initialized
+[0;34m[INFO][0m Log directory: /home/shift/code/nixos-gateway/test-results/test_run_20251217_135501
+[0;35m=== Discovering Tests ===[0m
+[0;34m[INFO][0m Found 87 valid test files
+[0;34m[INFO][0m Found 89 tests to run
+[0;34m[INFO][0m Running test: [0;35m=== Discovering Tests ===[0m
+[0;34m[INFO][0m Running simple Nix evaluation: [0;35m=== Discovering Tests ===[0m
+[0;31m[ERROR][0m ✗ [0;35m=== Discovering Tests ===[0m FAILED
+[0;34m[INFO][0m Running test: [0;34m[INFO][0m Found 87 valid test files
+[0;34m[INFO][0m Running simple Nix evaluation: [0;34m[INFO][0m Found 87 valid test files
+[0;31m[ERROR][0m ✗ [0;34m[INFO][0m Found 87 valid test files FAILED
+[0;34m[INFO][0m Running test: advanced-health-monitoring-test
+[0;34m[INFO][0m Running NixOS VM test: advanced-health-monitoring-test
+[0;32m[SUCCESS][0m ✓ advanced-health-monitoring-test PASSED
+[0;34m[INFO][0m Running test: advanced-networking-management-integration-test
+[0;34m[INFO][0m Running NixOS VM test: advanced-networking-management-integration-test
+[0;32m[SUCCESS][0m ✓ advanced-networking-management-integration-test PASSED
+[0;34m[INFO][0m Running test: advanced-networking-test
+[0;34m[INFO][0m Running simple Nix evaluation: advanced-networking-test
+[0;31m[ERROR][0m ✗ advanced-networking-test FAILED
+[0;34m[INFO][0m Running test: api-gateway-test
+[0;34m[INFO][0m Running NixOS VM test: api-gateway-test
+[0;32m[SUCCESS][0m ✓ api-gateway-test PASSED
+[0;34m[INFO][0m Running test: backup-recovery-test
+[0;34m[INFO][0m Running NixOS VM test: backup-recovery-test
+[0;32m[SUCCESS][0m ✓ backup-recovery-test PASSED
+[0;34m[INFO][0m Running test: basic-gateway-test
+[0;34m[INFO][0m Running NixOS VM test: basic-gateway-test
+[0;32m[SUCCESS][0m ✓ basic-gateway-test PASSED
+[0;34m[INFO][0m Running test: basic-test
+[0;34m[INFO][0m Running NixOS VM test: basic-test
+[0;32m[SUCCESS][0m ✓ basic-test PASSED
+[0;34m[INFO][0m Running test: bgp-basic-test
+[0;34m[INFO][0m Running NixOS VM test: bgp-basic-test
+[0;32m[SUCCESS][0m ✓ bgp-basic-test PASSED
+[0;34m[INFO][0m Running test: bgp-direct-test
+[0;34m[INFO][0m Running NixOS VM test: bgp-direct-test
+[0;32m[SUCCESS][0m ✓ bgp-direct-test PASSED
+[0;34m[INFO][0m Running test: bgp-enhanced-test
+[0;34m[INFO][0m Running NixOS VM test: bgp-enhanced-test
+[0;32m[SUCCESS][0m ✓ bgp-enhanced-test PASSED
+[0;34m[INFO][0m Running test: bgp-isolated-test
+[0;34m[INFO][0m Running NixOS VM test: bgp-isolated-test
+[0;32m[SUCCESS][0m ✓ bgp-isolated-test PASSED
+[0;34m[INFO][0m Running test: bgp-minimal-test
+[0;34m[INFO][0m Running NixOS VM test: bgp-minimal-test
+[0;32m[SUCCESS][0m ✓ bgp-minimal-test PASSED
+[0;34m[INFO][0m Running test: bgp-routing-test
+[0;34m[INFO][0m Running NixOS VM test: bgp-routing-test
+[0;32m[SUCCESS][0m ✓ bgp-routing-test PASSED
+[0;34m[INFO][0m Running test: byoip-bgp-test
+[0;34m[INFO][0m Running NixOS VM test: byoip-bgp-test
+[0;32m[SUCCESS][0m ✓ byoip-bgp-test PASSED
+[0;34m[INFO][0m Running test: cdn-test
+[0;34m[INFO][0m Running NixOS VM test: cdn-test
+[0;32m[SUCCESS][0m ✓ cdn-test PASSED
+[0;34m[INFO][0m Running test: config-diff-test
+[0;34m[INFO][0m Running NixOS VM test: config-diff-test
+[0;32m[SUCCESS][0m ✓ config-diff-test PASSED
+[0;34m[INFO][0m Running test: config-reload-test
+[0;34m[INFO][0m Running NixOS VM test: config-reload-test
+[0;32m[SUCCESS][0m ✓ config-reload-test PASSED
+[0;34m[INFO][0m Running test: container-network-policy-test
+[0;34m[INFO][0m Running NixOS VM test: container-network-policy-test
+[0;32m[SUCCESS][0m ✓ container-network-policy-test PASSED
+[0;34m[INFO][0m Running test: debug-mode-test
+[0;34m[INFO][0m Running NixOS VM test: debug-mode-test
+[0;32m[SUCCESS][0m ✓ debug-mode-test PASSED
+[0;34m[INFO][0m Running test: device-bandwidth-test
+[0;34m[INFO][0m Running NixOS VM test: device-bandwidth-test
+[0;32m[SUCCESS][0m ✓ device-bandwidth-test PASSED

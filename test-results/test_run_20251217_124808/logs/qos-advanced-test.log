@@ -1,0 +1,20 @@
+=== Test: qos-advanced-test ===
+File: /home/shift/code/nixos-gateway/tests/qos-advanced-test.nix
+Start Time: Wed 17 Dec 12:48:58 CET 2025
+
+error:
+       … from call site
+         at /home/shift/code/nixos-gateway/tests/qos-advanced-test.nix:1:1:
+            1| { pkgs, lib, ... }:
+             | ^
+            2|
+
+       error: function 'anonymous lambda' called without required argument 'pkgs'
+       at /home/shift/code/nixos-gateway/tests/qos-advanced-test.nix:1:1:
+            1| { pkgs, lib, ... }:
+             | ^
+            2|
+
+End Time: Wed 17 Dec 12:48:58 CET 2025
+Duration: 0s
+Exit Code: 1

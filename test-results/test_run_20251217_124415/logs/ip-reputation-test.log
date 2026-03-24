@@ -1,0 +1,8 @@
+=== Test: ip-reputation-test ===
+File: /home/shift/code/nixos-gateway/tests/ip-reputation-test.nix
+Start Time: Wed 17 Dec 12:45:03 CET 2025
+
+
+End Time: Wed 17 Dec 12:45:11 CET 2025
+Duration: 8s
+Exit Code: 0

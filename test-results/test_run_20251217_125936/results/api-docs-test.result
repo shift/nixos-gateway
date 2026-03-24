@@ -1,0 +1,9 @@
+{
+  "test_name": "api-docs-test",
+  "test_file": "/home/shift/code/nixos-gateway/tests/api-docs-test.nix",
+  "status": "failed",
+  "exit_code": 1,
+  "start_time": 1765972785,
+  "end_time": 1765972786,
+  "log_file": "/home/shift/code/nixos-gateway/test-results/test_run_20251217_125936/logs/api-docs-test.log"
+}

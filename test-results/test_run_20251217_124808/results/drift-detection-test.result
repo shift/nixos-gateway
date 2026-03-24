@@ -1,0 +1,9 @@
+{
+  "test_name": "drift-detection-test",
+  "test_file": "/home/shift/code/nixos-gateway/tests/drift-detection-test.nix",
+  "status": "passed",
+  "exit_code": 0,
+  "start_time": 1765972121,
+  "end_time": 1765972121,
+  "log_file": "/home/shift/code/nixos-gateway/test-results/test_run_20251217_124808/logs/drift-detection-test.log"
+}

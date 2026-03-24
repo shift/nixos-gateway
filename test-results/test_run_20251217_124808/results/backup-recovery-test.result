@@ -1,0 +1,9 @@
+{
+  "test_name": "backup-recovery-test",
+  "test_file": "/home/shift/code/nixos-gateway/tests/backup-recovery-test.nix",
+  "status": "passed",
+  "exit_code": 0,
+  "start_time": 1765972093,
+  "end_time": 1765972093,
+  "log_file": "/home/shift/code/nixos-gateway/test-results/test_run_20251217_124808/logs/backup-recovery-test.log"
+}

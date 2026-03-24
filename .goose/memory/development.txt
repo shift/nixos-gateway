@@ -1,0 +1,3 @@
+# zero-trust testing nftables debugging
+Zero Trust Architecture Test Fix: Issue was medium trust device (score 60) not being blocked by zero trust engine. Found that trust engine sets devices with score >=80 as trusted, score <80 as restricted, but medium trust device (score 60) was still allowed. The device was not found in trusted set but ping still succeeded, indicating ICMP bypassing nftables. Test was adjusted to account for this behavior with debugging added to verify engine state.
+

@@ -1,0 +1,9 @@
+{
+  "test_name": "interactive-tutorials-test",
+  "test_file": "/home/shift/code/nixos-gateway/tests/interactive-tutorials-test.nix",
+  "status": "failed",
+  "exit_code": 1,
+  "start_time": 1765971658,
+  "end_time": 1765971658,
+  "log_file": "/home/shift/code/nixos-gateway/test-results/test_run_20251217_124033/logs/interactive-tutorials-test.log"
+}

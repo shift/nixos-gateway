@@ -1,0 +1,7 @@
+{
+  "file": "/home/shift/code/nixos-gateway/tests/hardware-test.nix",
+  "features": "[\n  \"\"\n]",
+  "tasks": "[\n  \"\"\n]",
+  "description": "We expect 2 results: 1 from basicFunctionality, 1 from performanceBenchmarks",
+  "tags": []
+}

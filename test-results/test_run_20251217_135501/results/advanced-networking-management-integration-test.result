@@ -1,0 +1,9 @@
+{
+  "test_name": "advanced-networking-management-integration-test",
+  "test_file": "/home/shift/code/nixos-gateway/tests/advanced-networking-management-integration-test.nix",
+  "status": "passed",
+  "exit_code": 0,
+  "start_time": 1765976126,
+  "end_time": 1765976146,
+  "log_file": "/home/shift/code/nixos-gateway/test-results/test_run_20251217_135501/logs/advanced-networking-management-integration-test.log"
+}

@@ -1,0 +1,9 @@
+{
+  "test_name": "threat-intel-test",
+  "test_file": "/home/shift/code/nixos-gateway/tests/threat-intel-test.nix",
+  "status": "failed",
+  "exit_code": 1,
+  "start_time": 1765972150,
+  "end_time": 1765972150,
+  "log_file": "/home/shift/code/nixos-gateway/test-results/test_run_20251217_124808/logs/threat-intel-test.log"
+}
