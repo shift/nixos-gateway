@@ -70,10 +70,12 @@ in
           "2606:4700:4700::1111"
         ];
         domains = [ "~." ];
-        extraConfig = ''
-          DNS=127.0.0.1 ::1
-          Domains=~${domain}
-        '';
+        settings = {
+          Resolve = {
+            DNS = "127.0.0.1 ::1";
+            Domains = "~${domain}";
+          };
+        };
       };
 
       # WAN Interface (Primary - 10Gb)

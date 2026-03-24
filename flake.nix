@@ -140,7 +140,7 @@
             inherit pkgs;
             inherit (nixpkgs) lib;
           };
-          test-networking-isolated = import ./test-networking-isolated.nix {
+          test-networking-isolated = import ./tests/test-networking-isolated.nix {
             inherit pkgs;
             inherit (nixpkgs) lib;
           };

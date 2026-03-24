@@ -737,11 +737,8 @@ EOF
       
       # Show quick status
       if [[ -f "$REPORTS_DIR/acceptance-results-$SUITE.json" ]]; then
-          local status
           status=$(jq -r '.overall_status' "$REPORTS_DIR/acceptance-results-$SUITE.json")
-          local passed
           passed=$(jq -r '.passed_features' "$REPORTS_DIR/acceptance-results-$SUITE.json")
-          local total
           total=$(jq -r '.total_features' "$REPORTS_DIR/acceptance-results-$SUITE.json")
           
           echo "📊 Quick Status:"

@@ -10,6 +10,6 @@ pkgs.testers.nixosTest {
   testScript = ''
     start_all()
 
-    echo 'internet-gateway test completed'
+    print('internet-gateway test completed')
   '';
 }

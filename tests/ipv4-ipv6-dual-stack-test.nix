@@ -11,6 +11,6 @@ pkgs.testers.nixosTest {
   testScript = ''
     start_all()
 
-    echo 'ipv4-ipv6-dual-stack-test test completed'
+    print('ipv4-ipv6-dual-stack-test completed')
   '';
 }

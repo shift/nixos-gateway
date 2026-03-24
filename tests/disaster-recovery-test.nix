@@ -10,6 +10,6 @@ pkgs.testers.nixosTest {
   testScript = ''
     start_all()
 
-    echo 'disaster-recovery test completed'
+    print('disaster-recovery test completed')
   '';
 }

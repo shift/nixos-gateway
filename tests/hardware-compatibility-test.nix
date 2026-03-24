@@ -261,7 +261,8 @@ in
       
       # Save results
       mkdir -p /tmp/hardware-test-results
-      echo "{ \"passed\": $TESTS_PASSED, \"failed\": $TESTS_FAILED, \"results\": [$(IFS=,; echo \"$${TEST_RESULTS[*]}\")] }" > /tmp/hardware-test-results/hardware-compatibility-results.json
+      RESULTS_JSON=$(IFS=,; printf '%s' "$${TEST_RESULTS[*]}")
+      printf '{"passed": %s, "failed": %s, "results": [%s]}\n' "$TESTS_PASSED" "$TESTS_FAILED" "$RESULTS_JSON" > /tmp/hardware-test-results/hardware-compatibility-results.json
       
       # Exit with appropriate code
       if [ $TESTS_FAILED -eq 0 ]; then

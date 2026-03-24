@@ -10,6 +10,6 @@ pkgs.testers.nixosTest {
   testScript = ''
     start_all()
 
-    echo 'topology-discovery test completed'
+    print('topology-discovery test completed')
   '';
 }

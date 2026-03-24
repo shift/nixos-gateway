@@ -80,11 +80,9 @@ pkgs.testers.nixosTest {
           exporters = {
             node = {
               enable = true;
-              enabledCollectors = [ "systemd" ];
               port = 9100;
             };
           };
-          extraFlags = [ "--collector.textfile.directory=/run/prometheus" ];
         };
 
         boot.loader.systemd-boot.enable = lib.mkForce false;

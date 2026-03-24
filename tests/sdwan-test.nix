@@ -8,11 +8,12 @@ pkgs.testers.nixosTest {
     {
       imports = [ ../modules ];
       services.gateway.enable = true;
+      services.gateway.interfaces = { lan = "eth0"; wan = "eth1"; };
     };
 
   testScript = ''
     start_all()
     machine.wait_for_unit("multi-user.target")
-    echo 'sdwan-test completed'
+    print('sdwan-test completed')
   '';
 }

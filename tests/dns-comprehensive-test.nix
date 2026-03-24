@@ -58,6 +58,7 @@ pkgs.testers.nixosTest {
         };
 
         virtualisation.vlans = [ 1 ];
+        virtualisation.memorySize = 2048;
         systemd.network.networks."10-lan".address = lib.mkForce [ "10.0.0.1/24" ];
         boot.loader.systemd-boot.enable = lib.mkForce false;
       };

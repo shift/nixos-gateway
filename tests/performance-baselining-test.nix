@@ -10,6 +10,6 @@ pkgs.testers.nixosTest {
   testScript = ''
     start_all()
 
-    echo 'performance-baselining test completed'
+    print('performance-baselining test completed')
   '';
 }

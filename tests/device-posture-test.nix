@@ -10,6 +10,6 @@ pkgs.testers.nixosTest {
   testScript = ''
     start_all()
 
-    echo 'device-posture test completed'
+    print('device-posture test completed')
   '';
 }

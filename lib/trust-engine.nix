@@ -42,7 +42,8 @@ let
             log(f"Failed to flush {set_name}")
         
         for ip in ip_list:
-            cmd = ["add", "element", FAMILY, TABLE_NAME, set_name, ip]
+            # nftables requires elements to be wrapped in braces: { IP }
+            cmd = ["add", "element", FAMILY, TABLE_NAME, set_name, "{", ip, "}"]
             log(f"Adding {ip} to {set_name} with command: nft {' '.join(cmd)}")
             if not run_nft_cmd(cmd):
                 log(f"Failed to add {ip} to {set_name}")

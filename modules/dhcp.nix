@@ -56,6 +56,13 @@ in
       '';
     };
 
+    # Only start kea-dhcp-ddns if the TSIG key has been provisioned
+    systemd.services.kea-dhcp-ddns-server = {
+      unitConfig = {
+        ConditionPathExists = "/var/lib/kea/ddns-key.secret";
+      };
+    };
+
     systemd.paths.kea-ddns-setup = {
       description = "Watch for Knot TSIG key file";
       wantedBy = [ "multi-user.target" ];

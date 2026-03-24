@@ -10,6 +10,6 @@ pkgs.testers.nixosTest {
   testScript = ''
     start_all()
     
-    echo 'nat-port-forwarding-test test completed'
+    print('nat-port-forwarding-test completed')
   '';
 }
