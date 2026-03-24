@@ -60,15 +60,15 @@ in
             enable = true;
             port = cfg.monitoring.ports.nodeExporter;
             enabledCollectors = [
-              "systemd"
-              "textfile"
               "processes"
               "interrupts"
               "tcpstat"
               "netstat"
               "conntrack"
             ];
-            extraFlags = [ "--collector.textfile.directory=/var/lib/prometheus-node-exporter-text-files" ];
+            extraFlags = [
+              "--collector.textfile.directory=/var/lib/prometheus-node-exporter-text-files"
+            ];
           };
           systemd = {
             enable = true;

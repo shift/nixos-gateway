@@ -10,6 +10,6 @@ pkgs.testers.nixosTest {
   testScript = ''
     start_all()
 
-    echo 'interface-management-failover test completed'
+    print('interface-management-failover test completed')
   '';
 }

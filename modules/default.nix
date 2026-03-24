@@ -24,6 +24,7 @@
     ./nat-gateway.nix # NAT Gateway Configuration
     ./frr.nix # FRR BGP Routing
     ./policy-routing.nix # Policy-Based Routing
+    ./aethalloc.nix # AethAlloc memory allocator (optional, default enabled)
     # ./api-gateway.nix  # Temporarily disabled - complex dependencies
   ];
 

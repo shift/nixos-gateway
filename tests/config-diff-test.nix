@@ -10,6 +10,6 @@ pkgs.testers.nixosTest {
   testScript = ''
     start_all()
 
-    echo 'config-diff test completed'
+    print('config-diff test completed')
   '';
 }

@@ -8,6 +8,8 @@
     impermanence.url = "github:nix-community/impermanence";
     engram.url = "github:vincents-ai/engram";
     engram.inputs.nixpkgs.follows = "nixpkgs";
+    aethalloc.url = "github:shift/aethalloc";
+    aethalloc.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs =
@@ -17,6 +19,7 @@
       disko,
       impermanence,
       engram,
+      aethalloc,
     }:
     let
       systems = [
@@ -27,8 +30,32 @@
     in
     {
       nixosModules = {
-        default = import ./modules;
-        gateway = import ./modules;
+        default =
+          { config, lib, ... }:
+          {
+            imports = [ (import ./modules) aethalloc.nixosModules.default ];
+            # Wire up the gateway-level aethalloc option to the upstream module.
+            # This lives here (not in modules/aethalloc.nix) so that
+            # services.aethalloc.* only exists when aethalloc.nixosModules.default
+            # is actually imported — avoiding unknown-option errors in tests.
+            config = lib.mkIf config.services.gateway.aethalloc.enable {
+              services.aethalloc = {
+                enable = true;
+                services = config.services.gateway.aethalloc.services;
+              };
+            };
+          };
+        gateway =
+          { config, lib, ... }:
+          {
+            imports = [ (import ./modules) aethalloc.nixosModules.default ];
+            config = lib.mkIf config.services.gateway.aethalloc.enable {
+              services.aethalloc = {
+                enable = true;
+                services = config.services.gateway.aethalloc.services;
+              };
+            };
+          };
         dns = import ./modules/dns.nix;
         dhcp = import ./modules/dhcp.nix;
         disko = disko.nixosModules.disko;
@@ -44,6 +71,7 @@
         # network = import ./modules/network.nix;
         frr = import ./modules/frr.nix;
         policy-routing = import ./modules/policy-routing.nix;
+        aethalloc = import ./modules/aethalloc.nix;
         # direct-connect = import ./modules/direct-connect.nix;  # Temporarily disabled
         # dev-tools-monitor = import ./modules/dev-tools/monitor.nix;  # Temporarily disabled
         # api-gateway = import ./modules/api-gateway.nix;  # Temporarily disabled - complex dependencies
@@ -84,6 +112,10 @@
       };
 
       formatter = forAllSystems (system: nixpkgs.legacyPackages.${system}.nixfmt-rfc-style);
+
+      packages = forAllSystems (system: {
+        branding = import ./branding.nix { pkgs = nixpkgs.legacyPackages.${system}; };
+      });
 
       devShells = forAllSystems (
         system:
@@ -140,7 +172,7 @@
             inherit pkgs;
             inherit (nixpkgs) lib;
           };
-          test-networking-isolated = import ./test-networking-isolated.nix {
+          test-networking-isolated = import ./tests/test-networking-isolated.nix {
             inherit pkgs;
             inherit (nixpkgs) lib;
           };

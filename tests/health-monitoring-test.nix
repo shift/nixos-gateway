@@ -1,16 +1,17 @@
 { pkgs, lib, ... }:
 
 pkgs.testers.nixosTest {
-  name = "$test";
+  name = "health-monitoring-test";
 
   nodes.machine = { config, pkgs, ... }: {
     imports = [ ../modules ];
     services.gateway.enable = true;
+    services.gateway.interfaces = { lan = "eth0"; wan = "eth1"; };
   };
 
   testScript = ''
     start_all()
     machine.wait_for_unit("multi-user.target")
-    echo '$test completed (stubbed - needs implementation)'
+    print('health-monitoring-test completed (stubbed)')
   '';
 }

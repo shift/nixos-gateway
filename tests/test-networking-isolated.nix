@@ -28,8 +28,8 @@ pkgs.testers.nixosTest {
   testScript = ''
     start_all()
 
-    # Very simple test - just check if VM starts
-    gateway.succeed("systemctl is-active multi-user.target")
+    # Wait for VM to reach multi-user target
+    gateway.wait_for_unit("multi-user.target")
     gateway.succeed("echo 'VM started successfully'")
   '';
 }

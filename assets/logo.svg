@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="nixBlue" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7EBAE4"/>
+      <stop offset="100%" stop-color="#5277C3"/>
+    </linearGradient>
+    <linearGradient id="nixDark" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2D3A4C"/>
+      <stop offset="100%" stop-color="#1A2432"/>
+    </linearGradient>
+  </defs>
+  <polygon points="256,40 440,146 440,366 256,472 72,366 72,146" fill="url(#nixDark)" stroke="url(#nixBlue)" stroke-width="24" stroke-linejoin="round"/>
+
+  <circle cx="256" cy="256" r="48" fill="url(#nixBlue)" />
+
+  <circle cx="256" cy="110" r="28" fill="#7EBAE4" />
+  <line x1="256" y1="138" x2="256" y2="208" stroke="url(#nixBlue)" stroke-width="20" stroke-linecap="round"/>
+
+  <circle cx="130" cy="328" r="28" fill="#7EBAE4" />
+  <line x1="154" y1="314" x2="214" y2="280" stroke="url(#nixBlue)" stroke-width="20" stroke-linecap="round"/>
+
+  <circle cx="382" cy="328" r="28" fill="#7EBAE4" />
+  <line x1="358" y1="314" x2="298" y2="280" stroke="url(#nixBlue)" stroke-width="20" stroke-linecap="round"/>
+
+  <circle cx="256" cy="256" r="140" fill="none" stroke="#7EBAE4" stroke-width="6" stroke-dasharray="15 15" opacity="0.4"/>
+</svg>

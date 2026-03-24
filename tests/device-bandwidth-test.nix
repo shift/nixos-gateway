@@ -18,6 +18,6 @@ pkgs.testers.nixosTest {
   testScript = ''
     start_all()
 
-    echo 'device-bandwidth test completed'
+    print('device-bandwidth test completed')
   '';
 }

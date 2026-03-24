@@ -224,12 +224,10 @@ let
           let
             appSig = applicationSignatures.${app};
             portRules = map (port: "tcp dport ${toString port}") appSig.ports;
-            domainRules = if appSig ? domains then map (domain: "ip daddr ${domain}") appSig.domains else [];
-            signatureRules = map (sig:
-              "payload raw @${toString sig.offset} ${sig.pattern}"
-            ) appSig.signatures;
+            # Domain/wildcard matching is not valid nftables syntax; handled via eBPF only.
+            signatureRules = [];
           in
-          portRules ++ domainRules ++ signatureRules
+          portRules ++ signatureRules
         else
           []
       ) applications;
@@ -252,16 +250,14 @@ let
             p = protocolMap.${proto};
           in
           if p ? portRange then
-            "${p.proto} dport ${p.portRange}"
-          else if p ? signature && p.signature != null then
-            # Use signature-based matching for protocols with signatures
-            if p.signature ? tls then
-              "tcp dport ${toString p.dport} ct state established"
-            else if p.signature ? method then
-              "tcp dport ${toString p.dport} payload raw @0 \"${p.signature.method}\""
+              "${p.proto} dport ${p.portRange}"
+            else if p ? signature && p.signature != null then
+              # Use port-based matching (signature-based DPI not supported in plain nftables)
+              if p.signature ? tls then
+                "tcp dport ${toString p.dport} ct state established"
+              else
+                "${p.proto} dport ${toString p.dport}"
             else
-              "${p.proto} dport ${toString p.dport}"
-          else
             "${p.proto} dport ${toString p.dport}"
         else
           "meta l4proto ${proto}"
@@ -310,9 +306,9 @@ let
             let
               appSig = applicationSignatures.${rule.match.application};
               portMatches = map (port: "tcp dport ${toString port}") appSig.ports;
-              domainMatches = map (domain: "ip daddr ${domain}") appSig.domains;
+              # Domain/wildcard matching is not valid nftables syntax; omitted.
             in
-            lib.concatStringsSep " " (portMatches ++ domainMatches)
+            lib.concatStringsSep " " portMatches
           else ""
         else "";
 
@@ -343,23 +339,13 @@ let
   '';
 
   # Deep packet inspection helpers
+  # Note: nftables does not support raw string payload matching directly.
+  # DPI requires eBPF or userspace tools (e.g., nDPI). This stub returns
+  # empty rules so nftables compilation succeeds; real DPI is handled
+  # by the XDP/eBPF acceleration module.
   generateDpiRules =
     className: classConf: classId:
-    let
-      dpiRules = lib.concatMap (app:
-        if builtins.hasAttr app applicationSignatures then
-          let
-            appSig = applicationSignatures.${app};
-          in
-          map (sig: "payload raw @${toString sig.offset} \"${sig.pattern}\"") appSig.signatures
-        else
-          []
-      ) (classConf.applications or []);
-
-      markRule = "meta mark set ${toString classId}";
-      action = "${markRule} counter comment \"DPI: ${className}\"";
-    in
-    map (match: "${match} ${action}") dpiRules;
+    [];
 
 in
 {

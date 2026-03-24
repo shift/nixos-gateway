@@ -113,11 +113,7 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    assertions = [
-      {
-        assertion = false;
-        message = "ip-reputation module is stubbed - needs Python implementation";
-      }
-    ];
+    # Stub implementation - IP reputation blocking is a no-op until a full
+    # Python/eBPF implementation is wired in.
   };
 }

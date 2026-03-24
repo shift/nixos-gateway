@@ -10,6 +10,6 @@ pkgs.testers.nixosTest {
   testScript = ''
     start_all()
 
-    echo 'routing-ip-forwarding test completed'
+    print('routing-ip-forwarding test completed')
   '';
 }

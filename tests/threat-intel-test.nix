@@ -10,6 +10,6 @@ pkgs.testers.nixosTest {
   testScript = ''
     start_all()
 
-    echo 'threat-intel test completed'
+    print('threat-intel test completed')
   '';
 }
