@@ -30,14 +30,32 @@
     in
     {
       nixosModules = {
-        default = { ... }@args: {
-          imports = [ (import ./modules) aethalloc.nixosModules.default ];
-          _module.args.aethalloc = aethalloc;
-        };
-        gateway = { ... }@args: {
-          imports = [ (import ./modules) aethalloc.nixosModules.default ];
-          _module.args.aethalloc = aethalloc;
-        };
+        default =
+          { config, lib, ... }:
+          {
+            imports = [ (import ./modules) aethalloc.nixosModules.default ];
+            # Wire up the gateway-level aethalloc option to the upstream module.
+            # This lives here (not in modules/aethalloc.nix) so that
+            # services.aethalloc.* only exists when aethalloc.nixosModules.default
+            # is actually imported — avoiding unknown-option errors in tests.
+            config = lib.mkIf config.services.gateway.aethalloc.enable {
+              services.aethalloc = {
+                enable = true;
+                services = config.services.gateway.aethalloc.services;
+              };
+            };
+          };
+        gateway =
+          { config, lib, ... }:
+          {
+            imports = [ (import ./modules) aethalloc.nixosModules.default ];
+            config = lib.mkIf config.services.gateway.aethalloc.enable {
+              services.aethalloc = {
+                enable = true;
+                services = config.services.gateway.aethalloc.services;
+              };
+            };
+          };
         dns = import ./modules/dns.nix;
         dhcp = import ./modules/dhcp.nix;
         disko = disko.nixosModules.disko;
@@ -94,6 +112,10 @@
       };
 
       formatter = forAllSystems (system: nixpkgs.legacyPackages.${system}.nixfmt-rfc-style);
+
+      packages = forAllSystems (system: {
+        branding = import ./branding.nix { pkgs = nixpkgs.legacyPackages.${system}; };
+      });
 
       devShells = forAllSystems (
         system:

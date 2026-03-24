@@ -9,16 +9,13 @@ let
   cfg = config.services.gateway.aethalloc;
 in
 {
-  # NOTE: aethalloc.nixosModules.default is imported by the flake wrapper
-  # (nixosModules.default / nixosModules.gateway) which also injects
-  # _module.args.aethalloc.  This module only owns the gateway-level option
-  # surface and delegates to services.aethalloc.* which is provided by that
-  # upstream module when available.
-  #
-  # We do NOT import aethalloc.nixosModules.default here because this file is
-  # also imported by tests and standalone configurations that don't carry the
-  # aethalloc flake input — importing it here would cause an infinite
-  # recursion when the `aethalloc` module arg is absent.
+  # This module only declares the gateway-level option surface.
+  # Actual delegation to services.aethalloc.* (from aethalloc.nixosModules.default)
+  # happens in the flake nixosModules.default / nixosModules.gateway wrapper,
+  # where aethalloc.nixosModules.default is co-imported and the upstream option
+  # namespace exists.  Keeping the delegation here would cause NixOS strict
+  # option checking to error on `services.aethalloc' being undefined in tests
+  # and standalone configurations that don't go through the flake wrapper.
 
   options.services.gateway.aethalloc = {
     enable = lib.mkOption {
@@ -67,12 +64,4 @@ in
     };
   };
 
-  config = lib.mkIf cfg.enable {
-    # Delegate to aethalloc's own module (services.aethalloc.* is provided by
-    # aethalloc.nixosModules.default, imported by the flake wrapper).
-    services.aethalloc = {
-      enable = true;
-      services = cfg.services;
-    };
-  };
 }
