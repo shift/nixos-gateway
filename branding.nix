@@ -92,17 +92,37 @@ let
     </svg>
   '';
 
-in pkgs.runCommand "nixos-gateway-branding"
-  { nativeBuildInputs = [ pkgs.resvg pkgs.liberation_ttf ]; }
-  ''
-    mkdir -p $out/assets
+  # Pre-built assets derivation (used internally and by nix build)
+  assets = pkgs.runCommand "nixos-gateway-branding-assets"
+    { nativeBuildInputs = [ pkgs.resvg pkgs.liberation_ttf ]; }
+    ''
+      mkdir -p $out/assets
 
-    # SVG originals
-    cp ${logoSvg}          $out/assets/logo.svg
-    cp ${socialPreviewSvg} $out/assets/social-preview.svg
+      # SVG originals
+      cp ${logoSvg}          $out/assets/logo.svg
+      cp ${socialPreviewSvg} $out/assets/social-preview.svg
 
-    # PNG conversions — point resvg at Liberation Sans so sandbox text renders
-    export FONTCONFIG_FILE=${fontconf}
-    resvg ${logoSvg}          $out/assets/logo.png
-    resvg ${socialPreviewSvg} $out/assets/social-preview.png
-  ''
+      # PNG conversions — point resvg at Liberation Sans so sandbox text renders
+      export FONTCONFIG_FILE=${fontconf}
+      resvg ${logoSvg}          $out/assets/logo.png
+      resvg ${socialPreviewSvg} $out/assets/social-preview.png
+    '';
+
+in pkgs.writeShellApplication {
+  name = "nixos-gateway-branding";
+  runtimeInputs = [ pkgs.coreutils ];
+  text = ''
+    dest="''${1:-assets}"
+    mkdir -p "$dest"
+    cp ${assets}/assets/logo.svg        "$dest/logo.svg"
+    cp ${assets}/assets/logo.png        "$dest/logo.png"
+    cp ${assets}/assets/social-preview.svg "$dest/social-preview.svg"
+    cp ${assets}/assets/social-preview.png "$dest/social-preview.png"
+    chmod u+w "$dest"/*.svg "$dest"/*.png
+    echo "Branding assets written to $dest/"
+    echo "  logo.svg           (512x512)"
+    echo "  logo.png           (512x512)"
+    echo "  social-preview.svg (1200x630)"
+    echo "  social-preview.png (1200x630)"
+  '';
+}
