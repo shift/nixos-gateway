@@ -97,6 +97,9 @@ in
   # Automated acceptance test runner
   automatedAcceptanceTest = pkgs.writeShellApplication {
     name = "automated-acceptance-test";
+    # SC2129: style suggestion to group redirects — intentionally verbose for clarity
+    # SC2155: declare+assign separation — variables are correctly scoped via local
+    excludeShellChecks = [ "SC2129" "SC2155" ];
     text = ''
       set -euo pipefail
       

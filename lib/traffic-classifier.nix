@@ -224,12 +224,10 @@ let
           let
             appSig = applicationSignatures.${app};
             portRules = map (port: "tcp dport ${toString port}") appSig.ports;
-            domainRules = if appSig ? domains then map (domain: "ip daddr ${domain}") appSig.domains else [];
-            # Note: payload raw string matching is not valid nftables syntax;
-            # signature-based detection is omitted here (handled via eBPF).
+            # Domain/wildcard matching is not valid nftables syntax; handled via eBPF only.
             signatureRules = [];
           in
-          portRules ++ domainRules ++ signatureRules
+          portRules ++ signatureRules
         else
           []
       ) applications;
@@ -308,9 +306,9 @@ let
             let
               appSig = applicationSignatures.${rule.match.application};
               portMatches = map (port: "tcp dport ${toString port}") appSig.ports;
-              domainMatches = map (domain: "ip daddr ${domain}") appSig.domains;
+              # Domain/wildcard matching is not valid nftables syntax; omitted.
             in
-            lib.concatStringsSep " " (portMatches ++ domainMatches)
+            lib.concatStringsSep " " portMatches
           else ""
         else "";
 
