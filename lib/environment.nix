@@ -195,7 +195,7 @@ let
             node.enable = true;
             systemd.enable = true;
             process.enable = true;
-            postgresql.enable = false;
+            postgresql.enable = true;
             redis.enable = false;
           };
           grafana = {

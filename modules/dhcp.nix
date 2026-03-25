@@ -56,10 +56,15 @@ in
       '';
     };
 
-    # Only start kea-dhcp-ddns if the TSIG key has been provisioned
+    # Only start kea-dhcp-ddns if the TSIG key has been provisioned and is not empty
     systemd.services.kea-dhcp-ddns-server = {
       unitConfig = {
         ConditionPathExists = "/var/lib/kea/ddns-key.secret";
+      };
+      requires = [ "kea-ddns-setup.service" ];
+      after = [ "kea-ddns-setup.service" ];
+      serviceConfig = {
+        ExecStartPre = "+/bin/bash -c 'if [ ! -s /var/lib/kea/ddns-key.secret ]; then echo \"Kea DDNS key file is empty or missing\"; exit 1; fi'";
       };
     };
 

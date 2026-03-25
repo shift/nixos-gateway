@@ -304,8 +304,8 @@ let
         enable = true;
 
         dns = {
-          type = "mysql-replication";
-          method = "group-replication";
+          type = "postgresql-replication";
+          method = "streaming";
 
           primary = "gw-01";
           secondaries = [ "gw-02" "gw-03" ];
@@ -315,8 +315,8 @@ let
         };
 
         dhcp = {
-          type = "mysql-replication";
-          method = "master-slave";
+          type = "postgresql-replication";
+          method = "streaming";
 
           primary = "gw-01";
           secondaries = [ "gw-02" "gw-03" ];
