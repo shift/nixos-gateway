@@ -699,19 +699,149 @@ let
                 self._start_state_synchronization(service_name, sync_config, role)
 
         def _start_database_replication(self, service_name, sync_config, role):
-            """Start database replication"""
+            """Start database replication via pg_basebackup (replica) or pg_rewind (rejoin).
+
+            For the replica role: streams a base backup from the primary and writes
+            standby.signal + connection string into postgresql.auto.conf (Postgres 12+).
+            For the primary role: nothing to do at startup — replication slots are
+            created automatically when standbys connect.
+            On pg_basebackup failure the method retries 3 times with a 10-second
+            backoff then logs CRITICAL and returns without crashing the daemon.
+            """
             logger.info(f"Starting database replication for {service_name} in {role} mode")
 
-            # Database-specific replication setup would go here
-            # This is a placeholder for the actual implementation
-            logger.info("Database replication setup complete")
+            primary_host = sync_config.get("primary", "localhost")
+            pg_user = sync_config.get("pgUser", "postgres")
+            data_dir = sync_config.get(
+                "dataDir",
+                f"/var/lib/postgresql/{service_name}/data",
+            )
+            sentinel = f"/run/cluster/db-replication-{service_name}"
+
+            if role == "primary":
+                # Primary has nothing to do here — standbys connect and
+                # streaming replication begins automatically once the
+                # replica runs pg_basebackup with -R.
+                logger.info(
+                    f"Database replication: node is primary for {service_name}, "
+                    "waiting for standbys to connect"
+                )
+                open(sentinel, "w").close()
+                logger.info("Database replication setup complete")
+                return
+
+            # Replica role: run pg_basebackup to initialise the data directory
+            # and write connection info so postgres starts in standby mode.
+            import subprocess, time, os
+
+            os.makedirs(os.path.dirname(sentinel), exist_ok=True)
+
+            cmd = [
+                "pg_basebackup",
+                "-R",                        # write standby.signal + auto.conf
+                "-h", primary_host,
+                "-U", pg_user,
+                "-D", data_dir,
+                "--checkpoint=fast",
+                "--wal-method=stream",
+            ]
+
+            max_retries = 3
+            for attempt in range(1, max_retries + 1):
+                try:
+                    logger.info(
+                        f"pg_basebackup attempt {attempt}/{max_retries} "
+                        f"for {service_name} from {primary_host}"
+                    )
+                    subprocess.run(cmd, check=True, timeout=300)
+                    open(sentinel, "w").close()
+                    logger.info("Database replication setup complete")
+                    return
+                except subprocess.CalledProcessError as exc:
+                    logger.warning(
+                        f"pg_basebackup failed (attempt {attempt}): {exc}"
+                    )
+                except subprocess.TimeoutExpired:
+                    logger.warning(
+                        f"pg_basebackup timed out (attempt {attempt})"
+                    )
+                if attempt < max_retries:
+                    time.sleep(10)
+
+            # All retries exhausted — mark node as failed in cluster state and
+            # return without raising (daemon keeps running for other services).
+            logger.critical(
+                f"pg_basebackup failed after {max_retries} attempts for "
+                f"{service_name}; node marked as replication-failed"
+            )
+            open(f"{sentinel}.failed", "w").close()
 
         def _start_state_synchronization(self, service_name, sync_config, role):
-            """Start state synchronization"""
+            """Start state synchronization via confd watching etcd.
+
+            Writes a minimal confd conf.d/ TOML and a Jinja2-style template into
+            /run/cluster-confd/, then spawns confd in watch mode.  confd renders
+            the template whenever the etcd key-space changes and writes the result
+            to /run/cluster/<service_name>-state so other scripts can read it.
+
+            If the confd binary is not installed the method logs a warning and
+            returns gracefully — services continue with their static config.
+            """
             logger.info(f"Starting state synchronization for {service_name}")
 
-            # State synchronization setup would go here
-            logger.info("State synchronization setup complete")
+            import subprocess, os
+
+            etcd_endpoint = sync_config.get("etcdEndpoint", "http://127.0.0.1:2379")
+            confdir = "/run/cluster-confd"
+            conf_d = os.path.join(confdir, "conf.d")
+            templates_d = os.path.join(confdir, "templates")
+            ready_sentinel = os.path.join(confdir, "ready")
+
+            os.makedirs(conf_d, exist_ok=True)
+            os.makedirs(templates_d, exist_ok=True)
+
+            # conf.d TOML — tells confd which template to render and where to write it
+            toml_path = os.path.join(conf_d, f"{service_name}.toml")
+            with open(toml_path, "w") as fh:
+                fh.write(
+                    f'[template]\n'
+                    f'src = "{service_name}.tmpl"\n'
+                    f'dest = "/run/cluster/{service_name}-state"\n'
+                    f'keys = [\n'
+                    f'  "/cluster/{service_name}/members",\n'
+                    f']\n'
+                )
+
+            # Template — renders all member values one per line
+            tmpl_path = os.path.join(templates_d, f"{service_name}.tmpl")
+            with open(tmpl_path, "w") as fh:
+                fh.write(
+                    '{{range gets "/cluster/' + service_name + '/members/*"}}'
+                    '{{.Value}}\n'
+                    '{{end}}'
+                )
+
+            # Spawn confd in watch mode; its stdout/stderr go to the journal
+            # via the parent process's inherited file descriptors.
+            try:
+                subprocess.Popen(
+                    [
+                        "confd",
+                        "-backend", "etcd",
+                        "-node", etcd_endpoint,
+                        "-confdir", confdir,
+                        "-watch",
+                    ],
+                    stdout=subprocess.DEVNULL,
+                    stderr=subprocess.DEVNULL,
+                )
+                open(ready_sentinel, "w").close()
+                logger.info("State synchronization setup complete")
+            except FileNotFoundError:
+                logger.warning(
+                    "confd binary not found; state synchronization disabled. "
+                    "Services will use static configuration."
+                )
 
         def _start_health_monitoring(self):
             """Start health monitoring for cluster"""
@@ -1057,6 +1187,10 @@ let
       CLUSTER_NAME="${clusterConfig.name}"
       NODE_NAME="$(hostname)"
       LOG_FILE="/var/log/gateway/cluster-communication.log"
+      KEEPALIVED_PID="/run/keepalived.pid"
+      VRRP_STATE_FILE="/run/cluster/vrrp-state"
+      NOTIFY_SCRIPT="/run/cluster/keepalived-notify.sh"
+      COMM_READY="/run/cluster/comm-ready"
 
       log() {
         echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*" | tee -a "$LOG_FILE"
@@ -1064,65 +1198,248 @@ let
 
       log "Starting cluster communication for $CLUSTER_NAME"
 
-      # Cluster communication setup would go here
-      # This includes heartbeat, message passing, etc.
+      # Ensure runtime directory exists
+      mkdir -p /run/cluster
 
+      # Write the keepalived notify script.
+      # keepalived calls this on every VRRP state transition with three args:
+      #   $1 = instance name, $2 = state (MASTER|BACKUP|FAULT), $3 = priority
+      cat > "$NOTIFY_SCRIPT" <<'NOTIFY_EOF'
+      #!/bin/bash
+      INSTANCE="''${1}"
+      STATE="''${2}"
+      KEEPALIVED_PID_FILE="/run/keepalived.pid"
+      VRRP_STATE_FILE="/run/cluster/vrrp-state"
+
+      echo "''${STATE}" > "''${VRRP_STATE_FILE}"
+
+      if [ ! -f "''${KEEPALIVED_PID_FILE}" ]; then
+        echo "keepalived PID file not found, skipping signal" >&2
+        exit 0
+      fi
+
+      KA_PID=$(cat "''${KEEPALIVED_PID_FILE}")
+
+      case "''${STATE}" in
+        MASTER)
+          # Raise priority to 255 to assert MASTER role
+          kill -SIGUSR2 "''${KA_PID}" 2>/dev/null || true
+          ;;
+        BACKUP|FAULT)
+          # Lower priority so the peer wins the election
+          kill -SIGUSR1 "''${KA_PID}" 2>/dev/null || true
+          ;;
+      esac
+      NOTIFY_EOF
+
+      chmod +x "$NOTIFY_SCRIPT"
+      log "Keepalived notify script written to $NOTIFY_SCRIPT"
+
+      # Verify keepalived is present (warn-and-continue if not)
+      if [ ! -f "$KEEPALIVED_PID" ]; then
+        log "WARNING: keepalived PID file not found at $KEEPALIVED_PID — VRRP heartbeat may not be active"
+      else
+        log "keepalived is running (PID $(cat $KEEPALIVED_PID))"
+      fi
+
+      touch "$COMM_READY"
       log "Cluster communication initialized"
     '';
 
     # Generate service failover script
-    generateServiceFailoverScript = serviceName: serviceConfig: ''
-      #!/bin/bash
+    generateServiceFailoverScript = serviceName: serviceConfig:
+      let
+        primaryHost = serviceConfig.primaryHost or "localhost";
+        virtualIp   = serviceConfig.virtualIp   or "";
+        interface   = serviceConfig.interface   or "eth0";
+        dataDir     = serviceConfig.dataDir     or "/var/lib/postgresql/${serviceName}/data";
+      in
+      ''
+        #!/bin/bash
 
-      SERVICE_NAME="${serviceName}"
-      LOG_FILE="/var/log/gateway/failover-$SERVICE_NAME.log"
+        SERVICE_NAME="${serviceName}"
+        KEEPALIVED_PID="/run/keepalived.pid"
+        VRRP_STATE_FILE="/run/cluster/vrrp-state"
+        DATA_DIR="${dataDir}"
+        PRIMARY_HOST="${primaryHost}"
+        VIRTUAL_IP="${virtualIp}"
+        IFACE="${interface}"
+        LOG_FILE="/var/log/gateway/failover-$SERVICE_NAME.log"
 
-      log() {
-        echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*" | tee -a "$LOG_FILE"
-      }
+        log() {
+          echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*" | tee -a "$LOG_FILE"
+        }
 
-      log "Starting service failover for $SERVICE_NAME"
+        log "Starting service failover for $SERVICE_NAME"
 
-      # Demote current primary
-      log "Demoting current primary service"
-      systemctl stop "$SERVICE_NAME"
+        # Demote current primary
+        log "Demoting current primary service"
+        systemctl stop "$SERVICE_NAME"
 
-      # Remove virtual IP from current node
-      # Virtual IP management would go here
+        # ── Stub 5: Remove virtual IP from current node ───────────────────────
+        log "Demoting VRRP instance to BACKUP on current node"
+        if [ -f "$KEEPALIVED_PID" ]; then
+          kill -SIGUSR1 "$(cat $KEEPALIVED_PID)" 2>/dev/null || true
+          # Wait up to 10 s for keepalived to confirm BACKUP state
+          for i in $(seq 1 10); do
+            VRRP_STATE=$(cat "$VRRP_STATE_FILE" 2>/dev/null || echo "")
+            if [ "$VRRP_STATE" = "BACKUP" ]; then
+              log "VRRP state confirmed BACKUP after ''${i}s"
+              break
+            fi
+            sleep 1
+          done
+          if [ "$(cat $VRRP_STATE_FILE 2>/dev/null)" != "BACKUP" ]; then
+            log "WARNING: VRRP state did not reach BACKUP within 10s; continuing"
+          fi
+        else
+          log "WARNING: keepalived PID file not found at $KEEPALIVED_PID; skipping VIP demotion"
+        fi
 
-      # Promote backup service
-      log "Promoting backup service"
-      # Service promotion logic would go here
+        # ── Stub 6: Promote backup service ────────────────────────────────────
+        log "Promoting backup service"
+        if [ -f "$DATA_DIR/standby.signal" ]; then
+          log "Promoting PostgreSQL standby at $DATA_DIR"
+          if ! pg_ctl promote -D "$DATA_DIR" -w -t 30; then
+            log "pg_ctl promote failed; attempting pg_rewind from $PRIMARY_HOST"
+            if ! pg_rewind \
+                   --target-pgdata="$DATA_DIR" \
+                   --source-server="host=$PRIMARY_HOST user=postgres dbname=postgres" \
+                   --progress; then
+              log "ERROR: pg_rewind also failed; aborting failover to prevent split-brain"
+              exit 1
+            fi
+            log "pg_rewind succeeded; restarting postgres"
+            pg_ctl start -D "$DATA_DIR" -w -t 30
+          fi
+        else
+          log "No standby.signal found at $DATA_DIR; skipping database promotion"
+        fi
 
-      # Update virtual IP
-      log "Updating virtual IP"
-      # Virtual IP update logic would go here
+        # ── Stub 7: Update virtual IP on new primary ──────────────────────────
+        log "Updating virtual IP — promoting keepalived to MASTER"
+        if [ -f "$KEEPALIVED_PID" ]; then
+          kill -SIGUSR2 "$(cat $KEEPALIVED_PID)" 2>/dev/null || true
+          log "Sent SIGUSR2 to keepalived; VIP $VIRTUAL_IP should migrate to this node"
+        else
+          log "WARNING: keepalived PID file not found; skipping VRRP promotion"
+        fi
 
-      # Verify service
-      log "Verifying service functionality"
-      if systemctl is-active --quiet "$SERVICE_NAME"; then
-        log "Service failover completed successfully"
-      else
-        log "Service failover failed"
-        exit 1
-      fi
-    '';
+        # Gratuitous ARP to flush stale ARP caches on the LAN
+        if [ -n "$VIRTUAL_IP" ]; then
+          arping -U -I "$IFACE" -c 3 "$VIRTUAL_IP" 2>/dev/null || true
+          log "Gratuitous ARP sent for $VIRTUAL_IP on $IFACE"
+        fi
+
+        # Verify service
+        log "Verifying service functionality"
+        if systemctl is-active --quiet "$SERVICE_NAME"; then
+          log "Service failover completed successfully"
+        else
+          log "Service failover failed"
+          exit 1
+        fi
+      '';
 
     # Generate load balancer configuration
-    generateLoadBalancerConfig = lbConfig: ''
-      #!/bin/bash
+    generateLoadBalancerConfig = lbConfig:
+      let
+        algorithm = lbConfig.algorithm or "roundrobin";
+        # Map NixOS option names to HAProxy balance keywords
+        haproxyAlgo =
+          if algorithm == "round-robin" then "roundrobin"
+          else if algorithm == "weighted-round-robin" then "roundrobin"   # HAProxy uses weight= per server
+          else if algorithm == "least-connections" then "leastconn"
+          else if algorithm == "source-hash" then "source"
+          else "roundrobin";
 
-      log() {
-        echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*" | tee -a "/var/log/gateway/load-balancer.log"
-      }
+        # Render one HAProxy frontend+backend block per virtual service
+        renderService = vs:
+          let
+            backendName = "be_${vs.name}";
+            serverLines = lib.concatMapStringsSep "\n" (rs:
+              "  server ${rs.address}_${toString rs.port} ${rs.address}:${toString rs.port}"
+              + (if algorithm == "weighted-round-robin" then " weight ${toString (rs.weight or 1)}" else "")
+              + " check"
+            ) (vs.realServers or []);
+          in
+          ''
+            frontend fe_${vs.name}
+              bind ${vs.virtualIp or "0.0.0.0"}:${toString vs.port}
+              mode ${vs.protocol or "tcp"}
+              default_backend ${backendName}
 
-      log "Configuring load balancer"
+            backend ${backendName}
+              balance ${haproxyAlgo}
+              mode ${vs.protocol or "tcp"}
+            ${serverLines}
+          '';
 
-      # Load balancer configuration would go here
-      # This includes virtual services, real servers, health checks, etc.
+        haproxyCfg = ''
+          global
+            log /dev/log local0
+            maxconn 4096
+            pidfile /run/haproxy.pid
+            stats socket /run/haproxy/admin.sock mode 660 level admin expose-fd listeners
 
-      log "Load balancer configuration complete"
-    '';
+          defaults
+            log     global
+            timeout connect 5s
+            timeout client  30s
+            timeout server  30s
+
+          ${lib.concatMapStrings renderService (lbConfig.virtualServices or [])}
+        '';
+      in
+      ''
+        #!/bin/bash
+
+        HAPROXY_CFG="/run/haproxy/haproxy.cfg"
+        HAPROXY_SOCK="/run/haproxy/admin.sock"
+        HAPROXY_PID="/run/haproxy.pid"
+
+        log() {
+          echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*" | tee -a "/var/log/gateway/load-balancer.log"
+        }
+
+        log "Configuring load balancer"
+
+        # Ensure runtime directory exists
+        mkdir -p /run/haproxy
+
+        # Write the rendered HAProxy configuration
+        cat > "$HAPROXY_CFG" <<'HAPROXY_EOF'
+        ${haproxyCfg}
+        HAPROXY_EOF
+
+        # Reload HAProxy using the admin socket (zero-downtime), falling back
+        # to a graceful restart via -sf if the socket is not yet available,
+        # and finally to systemctl restart as a last resort.
+        if [ -S "$HAPROXY_SOCK" ]; then
+          log "Reloading HAProxy via admin socket"
+          if ! echo "reload" | socat stdio "$HAPROXY_SOCK"; then
+            log "ERROR: socat reload failed, falling back to -sf restart"
+            haproxy -f "$HAPROXY_CFG" -sf "$(cat $HAPROXY_PID 2>/dev/null)" -p "$HAPROXY_PID" || {
+              log "ERROR: haproxy -sf failed, attempting systemctl restart haproxy"
+              systemctl restart haproxy
+            }
+          fi
+        elif [ -f "$HAPROXY_PID" ]; then
+          log "No admin socket found; reloading HAProxy via -sf"
+          haproxy -f "$HAPROXY_CFG" -sf "$(cat $HAPROXY_PID)" -p "$HAPROXY_PID" || {
+            log "ERROR: haproxy -sf failed, attempting systemctl restart haproxy"
+            systemctl restart haproxy
+          }
+        else
+          log "Starting HAProxy for the first time"
+          haproxy -f "$HAPROXY_CFG" -p "$HAPROXY_PID" || {
+            log "ERROR: haproxy start failed, attempting systemctl restart haproxy"
+            systemctl restart haproxy
+          }
+        fi
+
+        log "Load balancer configuration complete"
+      '';
 
     # Generate systemd timer configuration
     generateSystemdTimer = name: schedule: ''

@@ -318,6 +318,10 @@
             inherit pkgs;
             inherit (nixpkgs) lib;
           };
+          cluster-manager-unit-test = import ./tests/cluster-manager-unit-test.nix {
+            inherit pkgs;
+            inherit (nixpkgs) lib;
+          };
           bgp-minimal-test = import ./tests/bgp-minimal-test.nix {
             inherit pkgs;
             inherit (nixpkgs) lib;
