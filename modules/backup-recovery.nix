@@ -209,7 +209,7 @@ in
                         };
 
                         type = mkOption {
-                          type = types.enum [ "file" "mysql" ];
+                          type = types.enum [ "file" "postgresql" ];
                           default = "file";
                           description = "DHCP database type";
                         };
@@ -235,7 +235,7 @@ in
                         };
 
                         type = mkOption {
-                          type = types.enum [ "file" "mysql" ];
+                          type = types.enum [ "file" "postgresql" ];
                           default = "file";
                           description = "DNS database type";
                         };

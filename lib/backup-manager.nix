@@ -312,9 +312,9 @@ let
                         else:
                             logger.warning(f"Database path does not exist: {path}")
 
-                elif db_type == 'mysql':
-                    # MySQL dump would go here
-                    logger.info(f"MySQL backup for {db_name} (placeholder)")
+                elif db_type == 'postgresql':
+                    # PostgreSQL dump using pg_dump
+                    logger.info(f"PostgreSQL backup for {db_name} (placeholder)")
 
         def _backup_certificates(self, tar, config):
             """Backup certificates"""
