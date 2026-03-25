@@ -306,6 +306,10 @@
             inherit pkgs;
             inherit (nixpkgs) lib;
           };
+          health-checks-unit-test = import ./tests/health-checks-unit-test.nix {
+            inherit pkgs;
+            inherit (nixpkgs) lib;
+          };
           bgp-minimal-test = import ./tests/bgp-minimal-test.nix {
             inherit pkgs;
             inherit (nixpkgs) lib;

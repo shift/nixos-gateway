@@ -516,16 +516,44 @@ let
 
         # Pool utilization check (if specified)
         ${if check.poolUtilization or null != null then ''
-          # This would require parsing DHCP lease files
-          # Placeholder for pool utilization check
-          echo "Pool utilization check not implemented"
+          echo "Checking DHCP pool utilization via kea-ctrl-agent..."
+          _kea_result=$(curl -sf -m 5 -X POST http://localhost:8000/ \
+            -H "Content-Type: application/json" \
+            -d '{"command":"lease4-get-all","service":["dhcp4"]}' 2>/dev/null)
+          if [ -z "$_kea_result" ]; then
+            echo "WARNING: kea-ctrl-agent unreachable, skipping pool utilization check"
+          else
+            _active=$(echo "$_kea_result" | jq '[.[0].arguments.leases[] | select(.state == 0)] | length' 2>/dev/null || echo "0")
+            _pool_size=${toString (check.poolUtilization.poolSize or 254)}
+            _threshold=${toString (check.poolUtilization.threshold or "0.8")}
+            _utilization=$(echo "scale=4; $_active / $_pool_size" | bc -l 2>/dev/null || awk "BEGIN{printf \"%.4f\", $_active / $_pool_size}")
+            echo "DHCP pool utilization: $_active / $_pool_size = $_utilization (threshold: $_threshold)"
+            _exceeded=$(echo "$_utilization > $_threshold" | bc -l 2>/dev/null || awk "BEGIN{print ($_utilization > $_threshold) ? 1 : 0}")
+            if [ "$_exceeded" -eq 1 ]; then
+              echo "DHCP pool utilization $_utilization exceeds threshold $_threshold"
+              exit 1
+            fi
+          fi
         '' else ""}
 
         # Response time check (if specified)
         ${if check.responseTime or null != null then ''
-          # This would require sending DHCP discover and measuring response time
-          # Placeholder for response time check
-          echo "Response time check not implemented"
+          echo "Checking DHCP response time via dhcping..."
+          _dhcp_server=${check.responseTime.serverIp or "127.0.0.1"}
+          _dhcp_client=${check.responseTime.clientIp or "0.0.0.0"}
+          _max_ms=${toString (check.responseTime.maxMs or 500)}
+          _t_start=$(date +%s%3N)
+          if ! dhcping -s "$_dhcp_server" -c "$_dhcp_client" -t 2 >/dev/null 2>&1; then
+            echo "DHCP server at $_dhcp_server did not respond to DISCOVER"
+            exit 1
+          fi
+          _t_end=$(date +%s%3N)
+          _elapsed=$(( _t_end - _t_start ))
+          echo "DHCP response time: ''${_elapsed}ms (threshold: ''${_max_ms}ms)"
+          if [ "$_elapsed" -gt "$_max_ms" ]; then
+            echo "DHCP response time ''${_elapsed}ms exceeds threshold ''${_max_ms}ms"
+            exit 1
+          fi
         '' else ""}
 
         echo "DHCP server check passed"
@@ -593,14 +621,60 @@ let
 
         # Packet rate check (if specified)
         ${if check.packetRate or null != null then ''
-          # This would require parsing IDS statistics
-          echo "Packet rate check not implemented"
+          echo "Checking IDS packet rate via suricatasc..."
+          _suricata_socket="/var/run/suricata/suricata-command.socket"
+          if [ ! -S "$_suricata_socket" ]; then
+            echo "WARNING: Suricata command socket not found at $_suricata_socket, skipping packet rate check"
+          else
+            _ids_stats=$(suricatasc -c "$_suricata_socket" 2>/dev/null <<'SURICATA_CMD'
+{"command":"dump-counters"}
+SURICATA_CMD
+)
+            if [ -z "$_ids_stats" ]; then
+              echo "WARNING: suricatasc returned no data, skipping packet rate check"
+            else
+              _pkt_rate=$(echo "$_ids_stats" | jq -r '.message."capture.kernel_packets" // .message.capture.kernel_packets // 0' 2>/dev/null || echo "0")
+              _max_pps=${toString (check.packetRate.maxPps or 1000000)}
+              echo "IDS packet rate: $_pkt_rate pps (threshold: $_max_pps)"
+              _exceeded=$(echo "$_pkt_rate > $_max_pps" | bc -l 2>/dev/null || awk "BEGIN{print ($_pkt_rate > $_max_pps) ? 1 : 0}")
+              if [ "$_exceeded" -eq 1 ]; then
+                echo "IDS packet rate $_pkt_rate exceeds threshold $_max_pps pps"
+                exit 1
+              fi
+            fi
+          fi
         '' else ""}
 
         # Drop rate check (if specified)
         ${if check.dropRate or null != null then ''
-          # This would require parsing IDS statistics
-          echo "Drop rate check not implemented"
+          echo "Checking IDS drop rate via suricatasc..."
+          _suricata_socket="/var/run/suricata/suricata-command.socket"
+          if [ ! -S "$_suricata_socket" ]; then
+            echo "WARNING: Suricata command socket not found at $_suricata_socket, skipping drop rate check"
+          else
+            _ids_stats=$(suricatasc -c "$_suricata_socket" 2>/dev/null <<'SURICATA_CMD'
+{"command":"dump-counters"}
+SURICATA_CMD
+)
+            if [ -z "$_ids_stats" ]; then
+              echo "WARNING: suricatasc returned no data, skipping drop rate check"
+            else
+              _pkts=$(echo "$_ids_stats" | jq -r '.message."capture.kernel_packets" // .message.capture.kernel_packets // 0' 2>/dev/null || echo "0")
+              _drops=$(echo "$_ids_stats" | jq -r '.message."capture.kernel_drops" // .message.capture.kernel_drops // 0' 2>/dev/null || echo "0")
+              _max_drop_pct=${toString (check.dropRate.maxPct or "0.01")}
+              if [ "$_pkts" -gt 0 ]; then
+                _drop_pct=$(echo "scale=6; $_drops / $_pkts" | bc -l 2>/dev/null || awk "BEGIN{printf \"%.6f\", $_drops / $_pkts}")
+                echo "IDS drop rate: $_drops / $_pkts = $_drop_pct (threshold: $_max_drop_pct)"
+                _exceeded=$(echo "$_drop_pct > $_max_drop_pct" | bc -l 2>/dev/null || awk "BEGIN{print ($_drop_pct > $_max_drop_pct) ? 1 : 0}")
+                if [ "$_exceeded" -eq 1 ]; then
+                  echo "IDS drop rate $_drop_pct exceeds threshold $_max_drop_pct"
+                  exit 1
+                fi
+              else
+                echo "IDS packet count is 0, skipping drop rate ratio check"
+              fi
+            fi
+          fi
         '' else ""}
 
         echo "IDS check passed"
@@ -838,9 +912,48 @@ let
         # Placeholder implementation
         case "$source" in
           "prometheus")
-            # Query Prometheus for metric
-            # This requires prometheus client or API access
-            echo "Prometheus metric check not implemented"
+            # Query Prometheus HTTP API for the metric value
+            _prom_url=${check.prometheusUrl or "http://localhost:9090"}
+            _prom_result=$(curl -sf -m 10 \
+              "$_prom_url/api/v1/query?query=$(echo "$metric" | sed 's/ /%20/g')" \
+              2>/dev/null)
+            if [ -z "$_prom_result" ]; then
+              echo "WARNING: Prometheus at $_prom_url is unreachable, skipping metric check for $metric"
+            else
+              _prom_value=$(echo "$_prom_result" | jq -r '.data.result[0].value[1] // empty' 2>/dev/null)
+              if [ -z "$_prom_value" ]; then
+                echo "WARNING: Prometheus returned no data for metric $metric (window: $window), skipping"
+              else
+                echo "Prometheus metric $metric = $_prom_value (operator: $operator, threshold: $threshold)"
+                case "$operator" in
+                  "gt")
+                    _check=$(echo "$_prom_value > $threshold" | bc -l 2>/dev/null || awk "BEGIN{print ($_prom_value > $threshold) ? 1 : 0}")
+                    if [ "$_check" -ne 1 ]; then
+                      echo "Metric $metric ($_prom_value) is not greater than $threshold"
+                      exit 1
+                    fi
+                    ;;
+                  "lt")
+                    _check=$(echo "$_prom_value < $threshold" | bc -l 2>/dev/null || awk "BEGIN{print ($_prom_value < $threshold) ? 1 : 0}")
+                    if [ "$_check" -ne 1 ]; then
+                      echo "Metric $metric ($_prom_value) is not less than $threshold"
+                      exit 1
+                    fi
+                    ;;
+                  "eq")
+                    _check=$(echo "$_prom_value == $threshold" | bc -l 2>/dev/null || awk "BEGIN{print ($_prom_value == $threshold) ? 1 : 0}")
+                    if [ "$_check" -ne 1 ]; then
+                      echo "Metric $metric ($_prom_value) does not equal $threshold"
+                      exit 1
+                    fi
+                    ;;
+                  *)
+                    echo "Unsupported operator: $operator"
+                    exit 1
+                    ;;
+                esac
+              fi
+            fi
             ;;
           "system")
             # System metric check
