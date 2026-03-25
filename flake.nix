@@ -310,6 +310,10 @@
             inherit pkgs;
             inherit (nixpkgs) lib;
           };
+          config-reload-unit-test = import ./tests/config-reload-unit-test.nix {
+            inherit pkgs;
+            inherit (nixpkgs) lib;
+          };
           bgp-minimal-test = import ./tests/bgp-minimal-test.nix {
             inherit pkgs;
             inherit (nixpkgs) lib;

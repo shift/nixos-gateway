@@ -143,23 +143,43 @@ let
   };
 
   # Configuration diff detection
+  #
+  # Compares two Nix config attrsets for a given service by hashing their
+  # JSON-serialised representations.  This is pure-eval (no file I/O) and
+  # deterministic: the same config always produces the same hash.
+  #
+  # Returns:
+  #   { changed :: bool, message :: string, files? :: [string] }
+  #   changed = true  → configs differ and a reload is warranted
+  #   changed = false → configs are identical, no reload needed
   generateConfigDiff =
     oldConfig: newConfig: service:
     let
-      serviceConfig = reloadCapabilities.${service};
+      serviceConfig = reloadCapabilities.${service} or { configFiles = [ ]; };
       hasConfigFiles = builtins.length serviceConfig.configFiles > 0;
+
+      # Serialise each config to JSON and hash; order-insensitive because
+      # builtins.toJSON sorts attrset keys lexicographically.
+      hashOf = cfg: builtins.hashString "sha256" (builtins.toJSON cfg);
+      oldHash = hashOf oldConfig;
+      newHash = hashOf newConfig;
+      changed = oldHash != newHash;
     in
-    if !hasConfigFiles then
+    if !hasConfigFiles && !changed then
       {
         changed = false;
-        message = "No config files to compare for ${service}";
+        message = "No config files registered and configs are identical for ${service}";
+      }
+    else if !changed then
+      {
+        changed = false;
+        message = "Configuration unchanged for ${service} (hash: ${builtins.substring 0 8 newHash}…)";
+        files = serviceConfig.configFiles;
       }
     else
-      # In a real implementation, this would compare file hashes
-      # For now, we'll use a simplified approach
       {
         changed = true;
-        message = "Configuration changed for ${service}";
+        message = "Configuration changed for ${service} (${builtins.substring 0 8 oldHash}… → ${builtins.substring 0 8 newHash}…)";
         files = serviceConfig.configFiles;
       };
 
