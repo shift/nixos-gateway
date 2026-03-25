@@ -59,14 +59,15 @@ pkgs.testers.nixosTest {
     gateway.wait_for_unit("multi-user.target")
 
     # Prometheus warn-and-continue: Prometheus not running → curl fails → exit 0
-    gateway.succeed("chmod +x /etc/health-check-tests/prom-check.sh")
-    output = gateway.succeed("/etc/health-check-tests/prom-check.sh 2>&1")
+    # Copy to /tmp so we can chmod (environment.etc paths are read-only in the Nix store)
+    gateway.succeed("cp /etc/health-check-tests/prom-check.sh /tmp/prom-check.sh && chmod +x /tmp/prom-check.sh")
+    output = gateway.succeed("/tmp/prom-check.sh 2>&1")
     assert "unreachable" in output or "WARNING" in output, \
       f"Expected Prometheus unreachable warning, got: {output}"
 
     # kea-ctrl-agent warn-and-continue: kea not running → curl fails → exit 0
-    gateway.succeed("chmod +x /etc/health-check-tests/dhcp-pool-check.sh")
-    output = gateway.succeed("/etc/health-check-tests/dhcp-pool-check.sh 2>&1")
+    gateway.succeed("cp /etc/health-check-tests/dhcp-pool-check.sh /tmp/dhcp-pool-check.sh && chmod +x /tmp/dhcp-pool-check.sh")
+    output = gateway.succeed("/tmp/dhcp-pool-check.sh 2>&1")
     assert "kea-ctrl-agent unreachable" in output, \
       f"Expected kea-ctrl-agent unreachable warning, got: {output}"
 
