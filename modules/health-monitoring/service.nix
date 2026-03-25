@@ -294,20 +294,23 @@ in
           "/var/log/gateway"
         ];
       };
-      path = with pkgs; [
-        coreutils
-        bash
-        procps
-        iproute2
-        netcat
-        dnsutils
-        sqlite
-        util-linux
-        gawk
-        gnugrep
-        jq
-        bc
-      ];
+        path = with pkgs; [
+          coreutils
+          bash
+          procps
+          iproute2
+          netcat
+          dnsutils
+          sqlite
+          util-linux
+          gawk
+          gnugrep
+          jq
+          bc
+          curl
+          dhcping
+          suricata
+        ];
     };
 
     # Health dashboard service
