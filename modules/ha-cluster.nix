@@ -384,16 +384,16 @@ in
         default = {
           enable = true;
           dns = {
-            type = "mysql-replication";
-            method = "group-replication";
+            type = "postgresql-replication";
+            method = "streaming";
             primary = "gw-01";
             secondaries = [ "gw-02" "gw-03" ];
             consistency = "eventual";
             conflictResolution = "last-writer";
           };
           dhcp = {
-            type = "mysql-replication";
-            method = "master-slave";
+            type = "postgresql-replication";
+            method = "streaming";
             primary = "gw-01";
             secondaries = [ "gw-02" "gw-03" ];
             consistency = "strong";
@@ -560,15 +560,15 @@ in
       };
     };
 
-    # Database synchronization services
+    # State synchronization services via etcd
     systemd.services.ha-cluster-dns-sync = mkIf cfg.services.dns.enable {
-      description = "HA Cluster DNS Database Synchronization";
-      after = [ "network.target" "bind.service" ];
+      description = "HA Cluster DNS State Synchronization via etcd";
+      after = [ "network.target" "bind.service" "etcd.service" ];
 
       serviceConfig = {
-        ExecStart = "${pkgs.mariadb}/bin/mysql -u root dns < /var/lib/cluster/sync/dns-sync.sql";
+        ExecStart = "${pkgs.etcd}/bin/etcdctl put /cluster/dns/state \"$(date -Iseconds)\"";
         Type = "oneshot";
-        User = "mysql";
+        User = "root";
       };
     };
 
@@ -582,13 +582,13 @@ in
     };
 
     systemd.services.ha-cluster-dhcp-sync = mkIf cfg.services.dhcp.enable {
-      description = "HA Cluster DHCP Database Synchronization";
-      after = [ "network.target" "dhcpd.service" ];
+      description = "HA Cluster DHCP State Synchronization via etcd";
+      after = [ "network.target" "dhcpd.service" "etcd.service" ];
 
       serviceConfig = {
-        ExecStart = "${pkgs.mariadb}/bin/mysql -u root dhcp < /var/lib/cluster/sync/dhcp-sync.sql";
+        ExecStart = "${pkgs.etcd}/bin/etcdctl put /cluster/dhcp/state \"$(date -Iseconds)\"";
         Type = "oneshot";
-        User = "mysql";
+        User = "root";
       };
     };
 
