@@ -65,17 +65,19 @@ jobs:
         run: |
           nix build .#nixosConfigurations.${{ matrix.profile }}.config.system.build.toplevel \
             --accept-flake-config \
-            --print-build-logs 2>&1 | tail -50
+            --print-build-logs
 
       - name: Check closure size
         run: |
-          STORE_PATH=$(nix build .#nixosConfigurations.${{ matrix.profile }}.config.system.build.toplevel --no-link --print-out-paths 2>/dev/null)
-          if [ -n "$STORE_PATH" ]; then
+          # Use the result symlink from the previous build step
+          STORE_PATH=$(readlink -f result)
+          if [ -d "$STORE_PATH" ]; then
             CLOSURE_SIZE=$(nix path-info -Sh "$STORE_PATH")
             echo "Closure: $CLOSURE_SIZE"
             echo "### ${{ matrix.profile }} Closure Size: \`${CLOSURE_SIZE}\`" >> $GITHUB_STEP_SUMMARY
           else
-            echo "Closure: failed to resolve"
+            echo "Closure: failed to resolve store path"
+            exit 1
           fi
 
       - name: Build disk image (${{ matrix.profile }})
