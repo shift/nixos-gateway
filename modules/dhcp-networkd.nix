@@ -61,11 +61,9 @@ in
         };
       }) staticDHCPv4Assignments;
 
-      ipv6Prefixes = lib.optional (cfg.ipv6Prefix != "") [{
-        ipv6PrefixConfig = {
-          Prefix = "${cfg.ipv6Prefix}/64";
-        };
-      }];
+      # IPv6: SLAAC + Router Advertisements
+      # Configured via ipv6SendRA and ipv6Prefixes in network.nix or dns-lean-unbound.nix
+      # Not duplicated here to avoid option type conflicts
     };
   };
 }
