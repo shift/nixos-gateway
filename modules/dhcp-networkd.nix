@@ -46,14 +46,14 @@ in
       };
 
       dhcpServerConfig = {
-        inherit poolOffset poolSize;
+        PoolOffset = poolOffset;
+        PoolSize = poolSize;
         EmitDNS = true;
         DNS = gatewayIpv4;
         EmitRouter = true;
-        Router = gatewayIpv4;
         EmitDomain = true;
-        Domain = domain;
-        LeaseTime = "86400";
+        DefaultLeaseTimeSec = 86400;
+        MaxLeaseTimeSec = 86400;
       };
 
       dhcpServerStaticLeases = map (assignment: {
