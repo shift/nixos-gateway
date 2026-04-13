@@ -76,12 +76,11 @@
   boot.tmp.useTmpfs = true;
   boot.tmp.tmpfsSize = "50%";
 
-  # === CF-friendly storage ===
-  # No swap partition on CF (use zram instead)
-  swapDevices = [ ];
-
-  # Mount root with noatime to minimize CF writes
+  # Root filesystem — device is set by the image builder (sd-image.nix)
+  # We only set mount options here
   fileSystems."/" = {
+    device = lib.mkDefault "/dev/disk/by-label/nixos";
+    fsType = lib.mkDefault "ext4";
     options = [ "noatime" "discard" ];
   };
 
