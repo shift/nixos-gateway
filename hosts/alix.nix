@@ -104,8 +104,7 @@
 
   # Strip unnecessary packages
   fonts.fontconfig.enable = false;
-  sound.enable = false;
-  services.xserver.enable = false;
+  services.xserver.enable = lib.mkDefault false;
 
   # === Conntrack tuning for low memory ===
   boot.kernel.sysctl = {

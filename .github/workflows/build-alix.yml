@@ -69,9 +69,14 @@ jobs:
 
       - name: Check closure size
         run: |
-          CLOSURE=$(nix path-info -Sh .#nixosConfigurations.${{ matrix.profile }}.config.system.build.toplevel 2>/dev/null || echo "unknown")
-          echo "Closure: $CLOSURE"
-          echo "### ${{ matrix.profile }} Closure Size: \`${CLOSURE}\`" >> $GITHUB_STEP_SUMMARY
+          STORE_PATH=$(nix build .#nixosConfigurations.${{ matrix.profile }}.config.system.build.toplevel --no-link --print-out-paths 2>/dev/null)
+          if [ -n "$STORE_PATH" ]; then
+            CLOSURE_SIZE=$(nix path-info -Sh "$STORE_PATH")
+            echo "Closure: $CLOSURE_SIZE"
+            echo "### ${{ matrix.profile }} Closure Size: \`${CLOSURE_SIZE}\`" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "Closure: failed to resolve"
+          fi
 
       - name: Build disk image (${{ matrix.profile }})
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
@@ -125,9 +130,11 @@ jobs:
 
       - name: Top 30 largest packages in closure
         run: |
+          STORE_PATH=$(nix build .#nixosConfigurations.${{ matrix.profile }}.config.system.build.toplevel --no-link --print-out-paths)
           echo "### ${{ matrix.profile }} Top 30 Largest Packages" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
-          nix-store -q --size --requisites \
-            $(nix build .#nixosConfigurations.${{ matrix.profile }}.config.system.build.toplevel --no-link --print-out-paths) \
-            2>/dev/null | sort -rn | head -30 >> $GITHUB_STEP_SUMMARY
+          nix-store -q --size --requisites "$STORE_PATH" | sort -rn | head -30 | tee -a $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
+          echo ""
+          echo "Total closure size:"
+          nix-store -q --size --requisites "$STORE_PATH" | awk '{sum += $1} END {printf "%.1f MB\n", sum / 1024 / 1024}'
