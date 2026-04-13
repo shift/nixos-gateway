@@ -69,15 +69,30 @@ jobs:
 
       - name: Check closure size
         run: |
-          # Use the result symlink from the previous build step
           STORE_PATH=$(readlink -f result)
           if [ -d "$STORE_PATH" ]; then
             CLOSURE_SIZE=$(nix path-info -Sh "$STORE_PATH")
-            echo "Closure: $CLOSURE_SIZE"
-            echo "### ${{ matrix.profile }} Closure Size: \`${CLOSURE_SIZE}\`" >> $GITHUB_STEP_SUMMARY
+            TOTAL_MB=$(nix-store -q --size --requisites "$STORE_PATH" | awk '{sum += $1} END {printf "%.1f", sum / 1024 / 1024}')
+            echo "Closure toplevel: $CLOSURE_SIZE"
+            echo "Total closure: ${TOTAL_MB} MB"
+            echo "### ${{ matrix.profile }} Closure Size: \`${CLOSURE_SIZE}\` (total: ${TOTAL_MB} MB)" >> $GITHUB_STEP_SUMMARY
           else
             echo "Closure: failed to resolve store path"
             exit 1
+          fi
+
+      - name: Top 30 largest packages
+        if: always()
+        run: |
+          STORE_PATH=$(readlink -f result 2>/dev/null)
+          if [ -d "$STORE_PATH" ]; then
+            echo "### ${{ matrix.profile }} Top 30 Largest Packages" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            nix-store -q --size --requisites "$STORE_PATH" | sort -rn | head -30 | while read size path; do
+              MB=$(echo "$size" | awk '{printf "%.1f", $1 / 1024 / 1024}')
+              echo "${MB} MB  $(basename $path)" | tee -a $GITHUB_STEP_SUMMARY
+            done
+            echo '```' >> $GITHUB_STEP_SUMMARY
           fi
 
       - name: Build disk image (${{ matrix.profile }})
@@ -113,9 +128,10 @@ jobs:
           if-no-files-found: warn
 
   closure-audit:
-    name: Closure size audit (${{ matrix.profile }})
+    name: Closure audit (${{ matrix.profile }})
     runs-on: ubuntu-22.04
     needs: build-alix
+    if: always()
     strategy:
       fail-fast: false
       matrix:
@@ -130,13 +146,31 @@ jobs:
 
       - uses: DeterminateSystems/magic-nix-cache-action@v8
 
-      - name: Top 30 largest packages in closure
+      - name: Full closure audit
         run: |
-          STORE_PATH=$(nix build .#nixosConfigurations.${{ matrix.profile }}.config.system.build.toplevel --no-link --print-out-paths)
+          STORE_PATH=$(nix build .#nixosConfigurations.${{ matrix.profile }}.config.system.build.toplevel --no-link --print-out-paths 2>/dev/null || true)
+          if [ -z "$STORE_PATH" ]; then
+            echo "Build failed, skipping audit"
+            exit 0
+          fi
+          
           echo "### ${{ matrix.profile }} Top 30 Largest Packages" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
-          nix-store -q --size --requisites "$STORE_PATH" | sort -rn | head -30 | tee -a $GITHUB_STEP_SUMMARY
+          nix-store -q --size --requisites "$STORE_PATH" | sort -rn | head -30 | while read size path; do
+            MB=$(echo "$size" | awk '{printf "%.1f", $1 / 1024 / 1024}')
+            echo "${MB} MB  $(basename $path)"
+          done | tee -a $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
-          echo ""
-          echo "Total closure size:"
-          nix-store -q --size --requisites "$STORE_PATH" | awk '{sum += $1} END {printf "%.1f MB\n", sum / 1024 / 1024}'
+          
+          TOTAL=$(nix-store -q --size --requisites "$STORE_PATH" | awk '{sum += $1} END {printf "%.1f MB", sum / 1024 / 1024}')
+          echo "Total: $TOTAL"
+          echo "### ${{ matrix.profile }} Total Closure: \`${TOTAL}\`" >> $GITHUB_STEP_SUMMARY
+          
+          # Check against 1GB CF budget
+          TOTAL_KB=$(nix-store -q --size --requisites "$STORE_PATH" | awk '{sum += $1} END {printf "%.0f", sum / 1024}')
+          CF_LIMIT_KB=$((900 * 1024))  # 900MB to leave room for boot partition
+          if [ "$TOTAL_KB" -gt "$CF_LIMIT_KB" ]; then
+            echo "### ⚠️ OVER BUDGET: ${TOTAL} exceeds 900 MB CF budget" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "### ✅ WITHIN BUDGET: ${TOTAL} fits in 900 MB CF budget" >> $GITHUB_STEP_SUMMARY
+          fi
