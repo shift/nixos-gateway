@@ -326,10 +326,12 @@ in
       };
     };
 
-    # DNS for VPN clients (assumes binding to VPN IP)
-    services.kresd.listenPlain = lib.mkAfter [
-      "${builtins.head (lib.splitString "/" cfg.wireguard.server.address)}:53"
-    ];
+    # DNS for VPN clients (only when kresd is available — full profile)
+    services.kresd = lib.mkIf (config.services.kresd.enable or false) {
+      listenPlain = lib.mkAfter [
+        "${builtins.head (lib.splitString "/" cfg.wireguard.server.address)}:53"
+      ];
+    };
 
     # Allow VPN traffic through firewall
     networking.firewall.trustedInterfaces = [ cfg.wireguard.server.interface ];

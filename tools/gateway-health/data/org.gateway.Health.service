@@ -1,0 +1,8 @@
+# D-Bus system service for gateway health monitoring
+# On-demand checks via D-Bus, periodic background checks, systemd integration
+
+[D-Bus Service]
+Name=org.gateway.Health
+Exec=/usr/bin/gateway-health
+User=root
+SystemdService=gateway-health.service

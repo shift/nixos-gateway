@@ -5,8 +5,11 @@
   ...
 }:
 
-{
-  imports = [
+let
+  cfg = config.services.gateway;
+
+  # Full profile imports - all modules, heavy but feature-complete
+  fullImports = [
     ./dns.nix
     ./dhcp.nix
     ./network.nix
@@ -25,11 +28,60 @@
     ./frr.nix # FRR BGP Routing
     ./policy-routing.nix # Policy-Based Routing
     ./aethalloc.nix # AethAlloc memory allocator (optional, default enabled)
-    # ./api-gateway.nix  # Temporarily disabled - complex dependencies
   ];
+
+  # ALIX-shared imports - lightweight modules common to both ALIX profiles
+  alixSharedImports = [
+    ./network.nix # systemd-networkd + nftables (shared core)
+    ./nat-gateway.nix # nftables NAT rules
+    ./policy-routing.nix # nftables policy routing
+    ./wifi-ap.nix # hostapd WiFi AP
+    ./monitoring-lean.nix # Rust gateway-health D-Bus service
+    ./vpn.nix # WireGuard VPN
+    ./disk-alix.nix # CF-friendly storage (ext4-noatime)
+    ./aethalloc.nix # AethAlloc option definitions (no heavy services, just options)
+  ];
+
+  # alix-networkd profile - systemd-networkd DHCP + unbound DNS
+  alixNetworkdImports = alixSharedImports ++ [
+    ./dns-lean-unbound.nix # unbound recursive DNS caching
+    ./dhcp-networkd.nix # systemd-networkd built-in DHCP server
+  ];
+
+  # alix-dnsmasq profile - dnsmasq combined DNS+DHCP
+  alixDnsmasqImports = alixSharedImports ++ [
+    ./dns-dnsmasq.nix # dnsmasq DNS caching + authoritative + DHCP
+  ];
+
+  # Select imports based on profile
+  profileImports =
+    if cfg.profile == "full" then
+      fullImports
+    else if cfg.profile == "alix-networkd" then
+      alixNetworkdImports
+    else if cfg.profile == "alix-dnsmasq" then
+      alixDnsmasqImports
+    else
+      fullImports;
+
+in
+{
+  imports = profileImports;
 
   options.services.gateway = {
     enable = lib.mkEnableOption "NixOS Gateway Services";
+
+    profile = lib.mkOption {
+      type = lib.types.enum [ "full" "alix-networkd" "alix-dnsmasq" ];
+      default = "full";
+      description = ''
+        Gateway profile selects backend implementations.
+        All profiles present the same configuration interface (services.gateway.data.*).
+        - full: Kea DHCP, Knot DNS + kresd, full monitoring, all modules.
+        - alix-networkd: systemd-networkd DHCP, unbound DNS, lean monitoring.
+        - alix-dnsmasq: dnsmasq combined DNS+DHCP, lean monitoring.
+      '';
+    };
 
     interfaces = lib.mkOption {
       type = lib.types.attrsOf lib.types.str;
@@ -81,32 +133,5 @@
       example = "2001:db8::/48";
       description = "IPv6 prefix for gateway services";
     };
-
-    # frr = lib.mkOption {
-    #   type = lib.types.submodule {
-    #     options = {
-    #       enable = lib.mkEnableOption "FRR BGP routing";
-    #       bgp = lib.mkOption {
-    #         type = lib.types.submodule {
-    #           options = {
-    #             enable = lib.mkEnableOption "BGP protocol";
-    #             asn = lib.mkOption {
-    #               type = lib.types.int;
-    #               default = 65001;
-    #               description = "Autonomous System Number";
-    #             };
-    #             routerId = lib.mkOption {
-    #               type = lib.types.str;
-    #               default = "router1";
-    #               description = "BGP router identifier";
-    #             };
-    #           };
-    #         };
-    #       };
-    #     };
-    #   };
-    #   default = { };
-    #   description = "FRR routing configuration";
-    # };
   };
 }

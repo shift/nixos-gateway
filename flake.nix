@@ -25,6 +25,7 @@
       systems = [
         "x86_64-linux"
         "aarch64-linux"
+        "i686-linux"
       ];
       forAllSystems = nixpkgs.lib.genAttrs systems;
     in
@@ -111,11 +112,119 @@
         troubleshootingEngine = import ./lib/troubleshooting-engine.nix { inherit (nixpkgs) lib; };
       };
 
+      # ALIX NixOS configurations (i686, deployment-only, no local builds)
+      nixosConfigurations = {
+        alix-networkd = nixpkgs.lib.nixosSystem {
+          system = "i686-linux";
+          modules = [
+            self.nixosModules.default
+            ./hosts/alix.nix
+            {
+              # Overlay our custom packages so modules can reference pkgs.gateway-health etc.
+              nixpkgs.overlays = [
+                (final: prev: {
+                  gateway-health = self.packages."${prev.stdenv.hostPlatform.system}".gateway-health;
+                  gateway-setup = self.packages."${prev.stdenv.hostPlatform.system}".gateway-setup;
+                })
+              ];
+              services.gateway.profile = "alix-networkd";
+              services.gateway.enable = true;
+              services.gateway.network.enable = true;
+              services.gateway.interfaces = {
+                lan = "eth1";
+                wan = "eth0";
+              };
+
+              # Minimal data so modules can evaluate
+              services.gateway.data = {
+                network = {
+                  subnets.lan = {
+                    ipv4 = { subnet = "192.168.1.0/24"; gateway = "192.168.1.1"; };
+                    ipv6 = { prefix = "2001:db8::/48"; gateway = "2001:db8::1"; };
+                  };
+                  dhcp = { poolStart = "192.168.1.100"; poolEnd = "192.168.1.200"; };
+                };
+                hosts = { staticDHCPv4Assignments = []; staticDHCPv6Assignments = []; };
+                firewall = {
+                  zones = {
+                    green = { allowedTCPPorts = [ 22 53 80 443 ]; allowedUDPPorts = [ 53 67 ]; };
+                    red = { allowedTCPPorts = []; allowedUDPPorts = []; };
+                  };
+                };
+              };
+            }
+          ];
+        };
+
+        alix-dnsmasq = nixpkgs.lib.nixosSystem {
+          system = "i686-linux";
+          modules = [
+            self.nixosModules.default
+            ./hosts/alix.nix
+            {
+              nixpkgs.overlays = [
+                (final: prev: {
+                  gateway-health = self.packages."${prev.stdenv.hostPlatform.system}".gateway-health;
+                  gateway-setup = self.packages."${prev.stdenv.hostPlatform.system}".gateway-setup;
+                })
+              ];
+              services.gateway.profile = "alix-dnsmasq";
+              services.gateway.enable = true;
+              services.gateway.network.enable = true;
+              services.gateway.interfaces = {
+                lan = "eth1";
+                wan = "eth0";
+              };
+
+              services.gateway.data = {
+                network = {
+                  subnets.lan = {
+                    ipv4 = { subnet = "192.168.1.0/24"; gateway = "192.168.1.1"; };
+                    ipv6 = { prefix = "2001:db8::/48"; gateway = "2001:db8::1"; };
+                  };
+                  dhcp = { poolStart = "192.168.1.100"; poolEnd = "192.168.1.200"; };
+                };
+                hosts = { staticDHCPv4Assignments = []; staticDHCPv6Assignments = []; };
+                firewall = {
+                  zones = {
+                    green = { allowedTCPPorts = [ 22 53 80 443 ]; allowedUDPPorts = [ 53 67 ]; };
+                    red = { allowedTCPPorts = []; allowedUDPPorts = []; };
+                  };
+                };
+              };
+            }
+          ];
+        };
+      };
+
       formatter = forAllSystems (system: nixpkgs.legacyPackages.${system}.nixfmt-rfc-style);
 
-      packages = forAllSystems (system: {
-        branding = import ./branding.nix { pkgs = nixpkgs.legacyPackages.${system}; };
-      });
+      packages = forAllSystems (system:
+        let
+          pkgs = nixpkgs.legacyPackages.${system};
+        in
+        {
+          branding = import ./branding.nix { inherit pkgs; };
+
+          gateway-health = pkgs.rustPlatform.buildRustPackage {
+            pname = "gateway-health";
+            version = "0.1.0";
+            src = ./tools/gateway-health;
+            cargoLock = {
+              lockFile = ./tools/gateway-health/Cargo.lock;
+            };
+          };
+
+          gateway-setup = pkgs.rustPlatform.buildRustPackage {
+            pname = "gateway-setup";
+            version = "0.1.0";
+            src = ./tools/gateway-setup;
+            cargoLock = {
+              lockFile = ./tools/gateway-setup/Cargo.lock;
+            };
+          };
+        }
+      );
 
       devShells = forAllSystems (
         system:

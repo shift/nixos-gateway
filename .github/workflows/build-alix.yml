@@ -1,0 +1,133 @@
+name: Build ALIX Images
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'flake.nix'
+      - 'flake.lock'
+      - 'hosts/**'
+      - 'modules/**'
+      - 'lib/**'
+      - 'config/**'
+      - 'tools/**'
+      - '.github/workflows/build-alix.yml'
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  # Quick evaluation check — catches module errors early without building
+  evaluate:
+    name: Evaluate NixOS configs
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: DeterminateSystems/nix-installer-action@v16
+
+      - uses: DeterminateSystems/magic-nix-cache-action@v8
+
+      - name: Evaluate alix-networkd
+        run: |
+          nix eval .#nixosConfigurations.alix-networkd.config.system.build.toplevel \
+            --accept-flake-config \
+            --no-build 2>&1 | tail -20
+
+      - name: Evaluate alix-dnsmasq
+        run: |
+          nix eval .#nixosConfigurations.alix-dnsmasq.config.system.build.toplevel \
+            --accept-flake-config \
+            --no-build 2>&1 | tail -20
+
+      - name: Check flake
+        run: |
+          nix flake check --no-build --accept-flake-config 2>&1 | tail -20
+
+  build-alix:
+    name: Build ALIX (${{ matrix.profile }})
+    runs-on: ubuntu-22.04
+    needs: evaluate
+    strategy:
+      fail-fast: false
+      matrix:
+        profile:
+          - alix-networkd
+          - alix-dnsmasq
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: DeterminateSystems/nix-installer-action@v16
+
+      - uses: DeterminateSystems/magic-nix-cache-action@v8
+
+      - name: Build system toplevel (${{ matrix.profile }})
+        run: |
+          nix build .#nixosConfigurations.${{ matrix.profile }}.config.system.build.toplevel \
+            --accept-flake-config \
+            --print-build-logs 2>&1 | tail -50
+
+      - name: Check closure size
+        run: |
+          CLOSURE=$(nix path-info -Sh .#nixosConfigurations.${{ matrix.profile }}.config.system.build.toplevel 2>/dev/null || echo "unknown")
+          echo "Closure: $CLOSURE"
+          echo "### ${{ matrix.profile }} Closure Size: \`${CLOSURE}\`" >> $GITHUB_STEP_SUMMARY
+
+      - name: Build disk image (${{ matrix.profile }})
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          # Try sdImage first, fall back to diskImage
+          nix build .#nixosConfigurations.${{ matrix.profile }}.config.system.build.sdImage \
+            --accept-flake-config \
+            --print-build-logs 2>&1 || \
+          nix build .#nixosConfigurations.${{ matrix.profile }}.config.system.build.diskImage \
+            --accept-flake-config \
+            --print-build-logs 2>&1 || true
+
+      - name: Compress and upload image
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          IMG=$(find result*/sd-image result*/disk-image -name '*.img' 2>/dev/null | head -1)
+          if [ -n "$IMG" ]; then
+            cp -L "$IMG" alix-${{ matrix.profile }}.img
+            gzip -9 alix-${{ matrix.profile }}.img
+            IMAGE_SIZE=$(du -h alix-${{ matrix.profile }}.img.gz | cut -f1)
+            echo "### ${{ matrix.profile }} Image Size: \`${IMAGE_SIZE}\`" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "### ${{ matrix.profile }} Image: build skipped or no image output found" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - uses: actions/upload-artifact@v4
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        with:
+          name: alix-${{ matrix.profile }}-image
+          path: alix-${{ matrix.profile }}.img.gz
+          retention-days: 30
+          if-no-files-found: warn
+
+  closure-audit:
+    name: Closure size audit (${{ matrix.profile }})
+    runs-on: ubuntu-22.04
+    needs: build-alix
+    strategy:
+      fail-fast: false
+      matrix:
+        profile:
+          - alix-networkd
+          - alix-dnsmasq
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: DeterminateSystems/nix-installer-action@v16
+
+      - uses: DeterminateSystems/magic-nix-cache-action@v8
+
+      - name: Top 30 largest packages in closure
+        run: |
+          echo "### ${{ matrix.profile }} Top 30 Largest Packages" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          nix-store -q --size --requisites \
+            $(nix build .#nixosConfigurations.${{ matrix.profile }}.config.system.build.toplevel --no-link --print-out-paths) \
+            2>/dev/null | sort -rn | head -30 >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
