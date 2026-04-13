@@ -70,14 +70,6 @@ in
           options = [ "noatime" "nodiratime" "discard" "errors=remount-ro" "commit=60" ];
         };
 
-        # Write back less frequently
-        boot.kernel.sysctl = {
-          "vm.dirty_ratio" = 5;
-          "vm.dirty_background_ratio" = 2;
-          "vm.dirty_writeback_centisecs" = 6000; # 60 seconds
-          "vm.swappiness" = 60;
-        };
-
         # Periodic TRIM for CF
         services.fstrim = {
           enable = true;
