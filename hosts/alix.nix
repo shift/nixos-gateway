@@ -125,7 +125,7 @@
     nftables
     wireguard-tools
     hostapd
-    vim-small
+    vim
   ];
 
   # === SSH access ===
