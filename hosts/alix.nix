@@ -97,12 +97,10 @@
   i18n.defaultLocale = "en_US.UTF-8";
 
   # No nix on target (deployment-only device, all builds in GHA)
-  # Don't register nix-daemon, don't include nix tools
+  # Minimize nix overhead on target
   nix.settings.auto-optimise-store = false;
-  services.nix-gc.enable = lib.mkForce false;
-  # Exclude nix from system packages — it's a deployment-only target
-  # The closure will still contain nix due to system activation scripts,
-  # but the daemon won't run builds
+  nix.gc.automatic = lib.mkForce false;
+  nix.optimise.automatic = lib.mkForce false;
 
   # Strip unnecessary packages
   fonts.fontconfig.enable = false;
