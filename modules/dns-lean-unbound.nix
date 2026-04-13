@@ -83,13 +83,8 @@ in
       };
     };
 
-    # Override resolved to point at unbound instead of kresd
-    # (merges with network.nix's resolved config, overriding DNS target)
-    services.resolved.settings = {
-      Resolve = {
-        DNS = "127.0.0.1 ::1";
-        Domains = "~${domain}";
-      };
-    };
+    # Override resolved DNS target to point at unbound
+    services.resolved.settings.Resolve.DNS = lib.mkForce "127.0.0.1 ::1";
+    services.resolved.settings.Resolve.Domains = lib.mkForce "~${domain}";
   };
 }

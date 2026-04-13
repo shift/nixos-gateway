@@ -89,12 +89,8 @@ in
         };
     };
 
-    # Override resolved to point at dnsmasq instead of kresd
-    services.resolved.settings = {
-      Resolve = {
-        DNS = gatewayIpv4;
-        Domains = "~${domain}";
-      };
-    };
+    # Override resolved DNS target to point at dnsmasq
+    services.resolved.settings.Resolve.DNS = lib.mkForce gatewayIpv4;
+    services.resolved.settings.Resolve.Domains = lib.mkForce "~${domain}";
   };
 }
