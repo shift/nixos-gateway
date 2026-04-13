@@ -61,11 +61,9 @@ in
         };
       }) staticDHCPv4Assignments;
 
-      # IPv6: SLAAC + Router Advertisements (no DHCPv6 server)
       ipv6Prefixes = lib.optional (cfg.ipv6Prefix != "") [{
         ipv6PrefixConfig = {
           Prefix = "${cfg.ipv6Prefix}/64";
-          Assign = true;
         };
       }];
     };
