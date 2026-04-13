@@ -49,9 +49,7 @@ in
         PoolOffset = poolOffset;
         PoolSize = poolSize;
         EmitDNS = true;
-        DNS = gatewayIpv4;
         EmitRouter = true;
-        EmitDomain = true;
         DefaultLeaseTimeSec = 86400;
         MaxLeaseTimeSec = 86400;
       };
