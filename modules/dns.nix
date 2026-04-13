@@ -7,7 +7,7 @@
 
 let
   cfg = config.services.gateway;
-  enabled = cfg.enable or true;
+  enabled = (cfg.enable or true) && (cfg.profile or "full") == "full";
 
   # Import schema normalization
   schemaNormalization = import ../lib/schema-normalization.nix { inherit lib; };
