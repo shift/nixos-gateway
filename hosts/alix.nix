@@ -11,16 +11,11 @@
   nixpkgs.hostPlatform = lib.mkDefault "i686-linux";
 
   # === Boot: BIOS/MBR only (no UEFI on ALIX) ===
-  boot.loader.grub = {
-    enable = true;
-    version = 2;
-    device = "/dev/sda"; # CompactFlash card
-    extraConfig = ''
-      serial --speed=115200 --unit=0 --word=8 --parity=no --stop=1
-      terminal_input serial
-      terminal_output serial
-    '';
-  };
+  # Use extlinux (syslinux) instead of GRUB to avoid the perl/GHC dependency chain
+  # GRUB's documentation build pulls in perl → Test2-Harness → ghc (broken on i686)
+  boot.loader.grub.enable = false;
+  boot.loader.generic-extlinux-compatible.enable = true;
+  boot.loader.timeout = 3;
 
   boot.kernelParams = [
     "console=ttyS0,115200n8"
