@@ -96,8 +96,6 @@
   i18n.defaultLocale = "en_US.UTF-8";
 
   # === Aggressive closure size reduction ===
-  # Strip debug symbols from all packages
-  environment.stripDebugSymbols = true;
   # Don't include any X11 libraries
   environment.noXlibs = true;
 
