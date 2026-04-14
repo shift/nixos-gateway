@@ -70,12 +70,11 @@ in
           "2606:4700:4700::1111"
         ];
         domains = [ "~." ];
-        settings = {
-          Resolve = {
-            DNS = "127.0.0.1 ::1";
-            Domains = "~${domain}";
-          };
-        };
+        # Point resolved at the local DNS resolver (Knot Resolver / unbound)
+        extraConfig = ''
+          DNS=127.0.0.1 ::1
+          Domains=~${domain}
+        '';
       };
 
       # WAN Interface (Primary - 10Gb)
