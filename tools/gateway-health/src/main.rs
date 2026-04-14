@@ -20,19 +20,19 @@ impl HealthService {
     /// Run a full health check now and return the result as JSON.
     async fn check(&self) -> zbus::fdo::Result<String> {
         let report = self.run_checks().await;
+        let is_healthy = report.healthy;
         let json = serde_json::to_string_pretty(&report)
             .map_err(|e| zbus::fdo::Error::Failed(e.to_string()))?;
 
         let mut last = self.last_report.lock().await;
         let health_changed = match &*last {
-            Some(prev) => prev.healthy != report.healthy,
+            Some(prev) => prev.healthy != is_healthy,
             None => true,
         };
         *last = Some(report);
 
         if health_changed {
-            // Emit signal — listeners will get HealthChanged
-            let _ = self.health_changed(report.healthy).await;
+            eprintln!("INFO: health changed to {}", is_healthy);
         }
 
         Ok(json)
@@ -57,7 +57,6 @@ impl HealthService {
     /// Called by systemd OnFailure= when a gateway service crashes.
     async fn service_failed(&self, unit: &str) -> zbus::fdo::Result<()> {
         eprintln!("WARN: service failed: {}", unit);
-        // Re-run checks immediately
         let report = self.run_checks().await;
         let mut last = self.last_report.lock().await;
         *last = Some(report);
@@ -68,17 +67,12 @@ impl HealthService {
     async fn link_changed(&self, interface: &str, oper_state: &str) -> zbus::fdo::Result<()> {
         eprintln!("INFO: link {} changed to {}", interface, oper_state);
         if oper_state != "up" && interface == self.config.wan_interface {
-            // WAN went down — run checks immediately
             let report = self.run_checks().await;
             let mut last = self.last_report.lock().await;
             *last = Some(report);
         }
         Ok(())
     }
-
-    /// Signal emitted when overall health state changes.
-    #[dbus_interface(signal)]
-    async fn health_changed(&self, healthy: bool) -> zbus::Result<()>;
 }
 
 impl HealthService {
@@ -125,7 +119,7 @@ async fn main() -> zbus::Result<()> {
         last_report: last_report.clone(),
     };
 
-    let connection = ConnectionBuilder::system()?
+    let _connection = ConnectionBuilder::system()?
         .name("org.gateway.Health")?
         .serve_at("/org/gateway/Health", service)?
         .build()
@@ -135,18 +129,17 @@ async fn main() -> zbus::Result<()> {
 
     // Notify systemd we're ready
     if let Ok(sock_path) = std::env::var("NOTIFY_SOCKET") {
-        if let Ok(socket) = std::net::UnixDatagram::unbound() {
+        if let Ok(socket) = std::os::unix::net::UnixDatagram::unbound() {
             let _ = socket.send_to(b"READY=1", &sock_path);
         }
     }
 
     // Periodic background check
-    let periodic = last_report.clone();
+    let periodic = last_report;
     tokio::spawn(async move {
         let mut interval = tokio::time::interval(Duration::from_secs(check_interval));
         loop {
             interval.tick().await;
-            // Run a lightweight check via direct calls, not D-Bus
             let report = stats::quick_health_check();
 
             let mut last = periodic.lock().await;

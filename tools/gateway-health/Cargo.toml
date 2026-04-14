@@ -5,8 +5,8 @@ edition = "2021"
 description = "D-Bus system service for ALIX gateway health monitoring"
 
 [dependencies]
-zbus = { version = "5", default-features = false, features = ["tokio"] }
-tokio = { version = "1", features = ["rt", "macros", "time", "fs", "sync"] }
+zbus = { version = "4", default-features = false, features = ["tokio"] }
+tokio = { version = "1", features = ["rt", "rt-multi-thread", "macros", "time", "fs", "sync"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 toml = "0.8"

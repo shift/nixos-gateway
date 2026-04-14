@@ -112,8 +112,8 @@ DHCPServer={dhcp}
 {dhcp_config}
 {ra_config}
 ",
-        dhcp = if c.profile == "alix-networkd" { "true" } else { "false" },
-        dhcp_config = if c.profile == "alix-networkd" {
+        dhcp = if c.profile.as_deref() == Some("alix-networkd") { "true" } else { "false" },
+        dhcp_config = if c.profile.as_deref() == Some("alix-networkd") {
             let pool = &c.dhcp;
             format!(
                 "
@@ -165,7 +165,6 @@ fn gen_networkd_static_leases(hosts: &[config::Host]) -> String {
 
 fn gen_nftables(c: &GatewayConfig) -> String {
     let wan = &c.network.wan_interface;
-    let lan = &c.network.lan_interface;
 
     format!(
         r#"#!/usr/sbin/nft -f
@@ -194,7 +193,6 @@ table ip nat {{
 }}
 "#,
         wan = wan,
-        lan = lan,
     )
 }
 
@@ -218,7 +216,7 @@ fn gen_resolv(c: &GatewayConfig) -> String {
 
     format!(
         "[Resolve]\nDNS={}\nDomains=~{}\n",
-        if c.profile == "alix-dnsmasq" {
+        if c.profile.as_deref() == Some("alix-dnsmasq") {
             gw_ip.clone()
         } else {
             "127.0.0.1".to_string()
@@ -244,7 +242,7 @@ monitored_interfaces = [
 ]
 "#,
         c.network.wan_interface,
-        if c.profile == "alix-dnsmasq" {
+        if c.profile.as_deref() == Some("alix-dnsmasq") {
             c.network.lan_ipv4.clone()
         } else {
             "127.0.0.1".to_string()
@@ -279,7 +277,7 @@ ieee80211n=0
     )
 }
 
-fn pool_offset(start: &str, subnet_gw: &str) -> u64 {
+fn pool_offset(start: &str, _subnet_gw: &str) -> u64 {
     start.split('.').last().and_then(|o| o.parse().ok()).unwrap_or(100)
 }
 
