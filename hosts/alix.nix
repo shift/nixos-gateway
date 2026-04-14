@@ -95,6 +95,12 @@
   i18n.supportedLocales = [ "en_US.UTF-8/UTF-8" ];
   i18n.defaultLocale = "en_US.UTF-8";
 
+  # === Aggressive closure size reduction ===
+  # Strip debug symbols from all packages
+  environment.stripDebugSymbols = true;
+  # Don't include any X11 libraries
+  environment.noXlibs = true;
+
   # No nix on target (deployment-only device, all builds in GHA)
   # Minimize nix overhead on target
   nix.settings.auto-optimise-store = false;
