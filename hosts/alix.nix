@@ -98,15 +98,24 @@
   # === Aggressive closure size reduction ===
   # (noXlibs was removed in NixOS 25.11 — use overlays if needed)
 
-  # No nix on target (deployment-only device, all builds in GHA)
-  # Minimize nix overhead on target
-  nix.settings.auto-optimise-store = false;
+  # === Nix disabled (deployment-only appliance) ===
+  # The system is installed as an image, cannot be rebuilt.
+  # Updates are whole-image replacements (dd to CF card).
+  # This removes nix, perl, GHC from the closure (~300MB+ savings).
+  nix.enable = false;
+  system.switch.enable = false;
+
+  # Minimize nix overhead on target (these are no-ops when nix is disabled)
+  nix.settings.auto-optimise-store = lib.mkForce false;
   nix.gc.automatic = lib.mkForce false;
   nix.optimise.automatic = lib.mkForce false;
 
   # Strip unnecessary packages
   fonts.fontconfig.enable = false;
   services.xserver.enable = lib.mkDefault false;
+
+  # Appliance mode — static user accounts
+  users.mutableUsers = false;
 
   # === Conntrack tuning for low memory ===
   boot.kernel.sysctl = {
