@@ -116,6 +116,9 @@
 
   # Appliance mode — static user accounts
   users.mutableUsers = false;
+  # Allow login without password/SSH key set (serial console access)
+  users.users.root.password = "alix";
+  # Or: users.allowNoPasswordLogin = true;
 
   # === Conntrack tuning for low memory ===
   boot.kernel.sysctl = {
