@@ -83,8 +83,7 @@ in
       };
     };
 
-    # Override resolved DNS target to point at unbound
-    services.resolved.settings.Resolve.DNS = lib.mkForce "127.0.0.1 ::1";
-    services.resolved.settings.Resolve.Domains = lib.mkForce "~${domain}";
+    # Disable systemd-resolved entirely — unbound handles all DNS
+    services.resolved.enable = lib.mkForce false;
   };
 }

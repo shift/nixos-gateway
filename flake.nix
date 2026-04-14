@@ -3,6 +3,7 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-24.11";
     disko.url = "github:nix-community/disko";
     disko.inputs.nixpkgs.follows = "nixpkgs";
     impermanence.url = "github:nix-community/impermanence";
@@ -16,6 +17,7 @@
     {
       self,
       nixpkgs,
+      nixpkgs-stable,
       disko,
       impermanence,
       engram,
@@ -113,8 +115,10 @@
       };
 
       # ALIX NixOS configurations (i686, deployment-only, no local builds)
+      # Uses nixpkgs-stable (24.11) for better i686 binary cache coverage
+      # nixpkgs-unstable has broken i686 GHC/perl/nix build chain
       nixosConfigurations = {
-        alix-networkd = nixpkgs.lib.nixosSystem {
+        alix-networkd = nixpkgs-stable.lib.nixosSystem {
           system = "i686-linux";
           modules = [
             self.nixosModules.default
@@ -156,7 +160,7 @@
           ];
         };
 
-        alix-dnsmasq = nixpkgs.lib.nixosSystem {
+        alix-dnsmasq = nixpkgs-stable.lib.nixosSystem {
           system = "i686-linux";
           modules = [
             self.nixosModules.default
