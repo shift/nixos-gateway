@@ -127,8 +127,8 @@
               # Overlay our custom packages so modules can reference pkgs.gateway-health etc.
               nixpkgs.overlays = [
                 (final: prev: {
-                  gateway-health = self.packages."${prev.stdenv.hostPlatform.system}".gateway-health;
-                  gateway-setup = self.packages."${prev.stdenv.hostPlatform.system}".gateway-setup;
+                  gateway-health = self.packages."${prev.stdenv.hostPlatform.system}".gateway-health-stable;
+                  gateway-setup = self.packages."${prev.stdenv.hostPlatform.system}".gateway-setup-stable;
                 })
               ];
               services.gateway.profile = "alix-networkd";
@@ -168,8 +168,8 @@
             {
               nixpkgs.overlays = [
                 (final: prev: {
-                  gateway-health = self.packages."${prev.stdenv.hostPlatform.system}".gateway-health;
-                  gateway-setup = self.packages."${prev.stdenv.hostPlatform.system}".gateway-setup;
+                  gateway-health = self.packages."${prev.stdenv.hostPlatform.system}".gateway-health-stable;
+                  gateway-setup = self.packages."${prev.stdenv.hostPlatform.system}".gateway-setup-stable;
                 })
               ];
               services.gateway.profile = "alix-dnsmasq";
@@ -206,10 +206,12 @@
       packages = forAllSystems (system:
         let
           pkgs = nixpkgs.legacyPackages.${system};
+          pkgs-stable = nixpkgs-stable.legacyPackages.${system};
         in
         {
           branding = import ./branding.nix { inherit pkgs; };
 
+          # Rust tools built with both unstable and stable nixpkgs
           gateway-health = pkgs.rustPlatform.buildRustPackage {
             pname = "gateway-health";
             version = "0.1.0";
@@ -220,6 +222,25 @@
           };
 
           gateway-setup = pkgs.rustPlatform.buildRustPackage {
+            pname = "gateway-setup";
+            version = "0.1.0";
+            src = ./tools/gateway-setup;
+            cargoLock = {
+              lockFile = ./tools/gateway-setup/Cargo.lock;
+            };
+          };
+
+          # Stable-built variants for ALIX (avoids pulling unstable closure)
+          gateway-health-stable = pkgs-stable.rustPlatform.buildRustPackage {
+            pname = "gateway-health";
+            version = "0.1.0";
+            src = ./tools/gateway-health;
+            cargoLock = {
+              lockFile = ./tools/gateway-health/Cargo.lock;
+            };
+          };
+
+          gateway-setup-stable = pkgs-stable.rustPlatform.buildRustPackage {
             pname = "gateway-setup";
             version = "0.1.0";
             src = ./tools/gateway-setup;
