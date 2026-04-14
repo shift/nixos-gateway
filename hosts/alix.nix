@@ -96,8 +96,7 @@
   i18n.defaultLocale = "en_US.UTF-8";
 
   # === Aggressive closure size reduction ===
-  # Don't include any X11 libraries
-  environment.noXlibs = true;
+  # (noXlibs was removed in NixOS 25.11 — use overlays if needed)
 
   # No nix on target (deployment-only device, all builds in GHA)
   # Minimize nix overhead on target
