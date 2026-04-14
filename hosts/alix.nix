@@ -157,6 +157,11 @@
   networking.networkmanager.enable = false;
   systemd.network.enable = true;
 
+  # Disable nftables ruleset validation — LKL (Linux Kernel Library)
+  # crashes on i686 during `nft --check`. Rules are still applied,
+  # just not pre-validated during build.
+  networking.nftables.checkRuleset = false;
+
   # Single core — irqbalance is pointless
   services.irqbalance.enable = lib.mkForce false;
 
