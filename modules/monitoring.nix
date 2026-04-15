@@ -50,7 +50,7 @@ in
     };
   };
 
-  config = lib.mkMerge [
+  config = lib.mkIf enabled (lib.mkMerge [
     {
       services.prometheus = {
         enable = true;
@@ -80,5 +80,5 @@ in
       ];
     }
 
-  ];
+  ]);
 }
