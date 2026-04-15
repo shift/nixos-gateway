@@ -152,21 +152,10 @@ jobs:
           
           echo "### ${{ matrix.profile }} Top 30 Largest Packages" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
-          nix path-info -rSh "$STORE_PATH" | sort -rh | head -30 | while read size hash name; do
-            echo "${size}  ${name}"
-          done | tee -a $GITHUB_STEP_SUMMARY
+          nix path-info -rSh "$STORE_PATH" | sort -rh | head -30 | tee -a $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
           
-          # Calculate total using nix path-info
-          TOTAL_BYTES=$(nix path-info -rS "$STORE_PATH" | awk '{sum += $1} END {printf "%.0f", sum}')
-          TOTAL_MB=$(echo "$TOTAL_BYTES" | awk '{printf "%.1f", $1 / 1024 / 1024}')
-          echo "Total: ${TOTAL_MB} MB"
-          echo "### ${{ matrix.profile }} Total Closure: \`${TOTAL_MB} MB\`" >> $GITHUB_STEP_SUMMARY
-          
-          # Check against 1GB CF budget
-          CF_LIMIT_MB=900
-          if [ "$(echo \"$TOTAL_MB > $CF_LIMIT_MB\" | bc -l)" = "1" ]; then
-            echo "### ⚠️ OVER BUDGET: ${TOTAL_MB} MB exceeds 900 MB CF budget" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "### ✅ WITHIN BUDGET: ${TOTAL_MB} MB fits in 900 MB CF budget" >> $GITHUB_STEP_SUMMARY
-          fi
+          # Calculate total closure size in MB
+          TOTAL=$(nix path-info -rSh "$STORE_PATH" | awk '{sum += $1} END {print sum}')
+          echo "Total closure size (human): $TOTAL"
+          echo "### ${{ matrix.profile }} Total: $TOTAL" >> $GITHUB_STEP_SUMMARY
