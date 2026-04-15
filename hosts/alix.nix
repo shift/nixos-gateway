@@ -137,18 +137,10 @@
     "vm.dirty_background_ratio" = 2;
   };
 
-  # === Minimal system packages ===
-  environment.systemPackages = with pkgs; [
-    coreutils
-    bash
-    openssh
-    iputils
-    conntrack-tools
-    nftables
-    wireguard-tools
-    hostapd
-    vim
-  ];
+  # === Additional tool availability (busybox provides most utilities) ===
+  # busybox from defaultPackages + above list covers all needs
+  programs.vim.defaultEditor = false;
+  programs.bash.completion.enable = false;
 
   # === SSH access ===
   services.openssh = {
