@@ -3,7 +3,7 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-24.11";
+    nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-25.11";
     disko.url = "github:nix-community/disko";
     disko.inputs.nixpkgs.follows = "nixpkgs";
     impermanence.url = "github:nix-community/impermanence";
@@ -115,8 +115,8 @@
       };
 
       # ALIX NixOS configurations (i686, deployment-only, no local builds)
-      # Uses nixpkgs-stable (24.11) for better i686 binary cache coverage
-      # nixpkgs-unstable has broken i686 GHC/perl/nix build chain
+      # Uses nixpkgs-25.11 (latest stable)
+      # First build is slow (no i686 binary cache) but GHA cache covers subsequent builds
       nixosConfigurations = {
         alix-networkd = nixpkgs-stable.lib.nixosSystem {
           system = "i686-linux";

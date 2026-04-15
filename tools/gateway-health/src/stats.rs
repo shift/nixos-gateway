@@ -78,7 +78,7 @@ pub fn check_carrier(interface: &str) -> Option<bool> {
 
 /// Resolve a hostname via a single UDP DNS query.
 /// Returns Some(true) on NOERROR, Some(false) on error response, None on timeout/failure.
-pub fn dns_resolve(domain: &str, dns_server: &str, timeout: Duration) -> Option<bool> {
+pub async fn dns_resolve(domain: &str, dns_server: &str, timeout: Duration) -> Option<bool> {
     // Build DNS query packet
     let mut query = Vec::with_capacity(domain.len() + 20);
 
