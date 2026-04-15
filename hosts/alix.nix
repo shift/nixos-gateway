@@ -108,6 +108,18 @@
   # Strip unnecessary packages
   fonts.fontconfig.enable = false;
   services.xserver.enable = lib.mkDefault false;
+  environment.defaultPackages = lib.mkForce [];  # Remove perl, rsync, strace defaults
+  environment.systemPackages = with pkgs; [
+    # Absolute minimum — use busybox for most utilities
+    busybox
+    openssh
+    nftables
+    wireguard-tools
+    hostapd
+    conntrack-tools
+  ];
+  # Use lighter alternatives
+  services.openssh.package = pkgs.openssh;
 
   # Appliance mode — static user accounts
   users.mutableUsers = false;
