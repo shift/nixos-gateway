@@ -3,7 +3,7 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-25.11";
+    nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-24.11";
     disko.url = "github:nix-community/disko";
     disko.inputs.nixpkgs.follows = "nixpkgs";
     impermanence.url = "github:nix-community/impermanence";
@@ -115,8 +115,9 @@
       };
 
       # ALIX NixOS configurations (i686, deployment-only, no local builds)
-      # Uses nixpkgs-25.11 (latest stable)
-      # First build is slow (no i686 binary cache) but GHA cache covers subsequent builds
+      # Uses nixpkgs-24.11 (last release with i686 binary cache)
+      # 25.11 dropped i686 cache; first build takes 6+ hours and GHA cache
+      # doesn't persist it reliably. Revisit when Cachix is set up.
       nixosConfigurations = {
         alix-networkd = nixpkgs-stable.lib.nixosSystem {
           system = "i686-linux";

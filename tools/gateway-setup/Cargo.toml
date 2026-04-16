@@ -7,7 +7,7 @@ description = "Config generator for ALIX gateway (TOML → networkd/nftables/hos
 [dependencies]
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
-toml = "0.8"
+toml = "0.7"
 
 [profile.release]
 opt-level = "z"
