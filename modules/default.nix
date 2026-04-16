@@ -50,6 +50,7 @@ in
     ./dhcp-networkd.nix
     ./wifi-ap.nix
     ./monitoring-lean.nix
+    ./image-alix.nix
     ./disk-alix.nix
   ];
 

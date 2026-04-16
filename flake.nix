@@ -157,6 +157,9 @@
                   };
                 };
               };
+
+              # Enable custom ALIX image builder (produces raw .img for dd)
+              alixImage.enable = true;
             }
           ];
         };
@@ -197,6 +200,9 @@
                   };
                 };
               };
+
+              # Enable custom ALIX image builder (produces raw .img for dd)
+              alixImage.enable = true;
             }
           ];
         };
