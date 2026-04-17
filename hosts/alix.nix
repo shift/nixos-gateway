@@ -1,0 +1,175 @@
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
+
+{
+  # === Platform ===
+  nixpkgs.system = "i686-linux";
+  nixpkgs.hostPlatform = lib.mkDefault "i686-linux";
+
+  # === Boot: BIOS/MBR only (no UEFI on ALIX) ===
+  # Use extlinux (syslinux) instead of GRUB to avoid the perl/GHC dependency chain
+  # GRUB's documentation build pulls in perl → Test2-Harness → ghc (broken on i686)
+  boot.loader.grub.enable = false;
+  boot.loader.generic-extlinux-compatible.enable = true;
+  boot.loader.timeout = 3;
+
+  boot.kernelParams = [
+    "console=ttyS0,115200n8"
+    "panic=10"
+    "quiet"
+    "loglevel=3"
+  ];
+
+  # === Custom kernel (built-in drivers only, no module loader) ===
+  # See config/kernel/alix.config for the full kernel config
+  boot.kernelPackages = lib.mkDefault (
+    pkgs.linuxPackagesFor (
+      pkgs.linuxManualConfig {
+        inherit (pkgs.linux_6_6) src;
+        version = pkgs.linux_6_6.version;
+        configfile = ../config/kernel/alix.config;
+        allowImportFromDerivation = true;
+      }
+    )
+  );
+
+  # No module loading - everything is built-in
+  boot.kernelModules = lib.mkForce [ ];
+  boot.extraModulePackages = lib.mkForce [ ];
+  boot.initrd.availableKernelModules = lib.mkForce [ ];
+  boot.initrd.kernelModules = lib.mkForce [ ];
+
+  # Minimal initramfs (or skip entirely with monolithic kernel)
+  boot.initrd.enable = lib.mkDefault true;
+
+  # === Serial console ===
+  systemd.services."serial-getty@ttyS0" = {
+    enable = true;
+    wantedBy = [ "getty.target" ];
+    serviceConfig.Restart = "always";
+  };
+
+  # === Memory conservation ===
+  services.journald.extraConfig = ''
+    Storage=volatile
+    Compress=yes
+    SystemMaxUse=10M
+    MaxFileSec=1day
+  '';
+
+  # zram swap - compressed swap in RAM (better than nothing on 256MB)
+  zramSwap = {
+    enable = true;
+    memoryPercent = 25; # 64MB on 256MB system
+    algorithm = "lzo-rle"; # Fastest on Geode LX (no AES, no SIMD)
+  };
+
+  boot.tmp.useTmpfs = true;
+  boot.tmp.tmpfsSize = "50%";
+
+  # Root filesystem — device is set by the image builder (sd-image.nix)
+  # We only set mount options here
+  fileSystems."/" = {
+    device = lib.mkDefault "/dev/disk/by-label/nixos";
+    fsType = lib.mkDefault "ext4";
+    options = [ "noatime" "discard" ];
+  };
+
+  # === Documentation/locale stripping (1GB CF) ===
+  documentation.enable = false;
+  documentation.man.enable = false;
+  documentation.man.generateCaches = false;
+  documentation.info.enable = false;
+  documentation.doc.enable = false;
+  documentation.nixos.enable = false;
+
+  i18n.supportedLocales = [ "en_US.UTF-8/UTF-8" ];
+  i18n.defaultLocale = "en_US.UTF-8";
+
+  # === Aggressive closure size reduction ===
+  # (noXlibs was removed in NixOS 25.11 — use overlays if needed)
+
+  # === Nix disabled (deployment-only appliance) ===
+  # The system is installed as an image, cannot be rebuilt.
+  # Updates are whole-image replacements (dd to CF card).
+  # This removes nix, perl, GHC from the closure (~300MB+ savings).
+  nix.enable = false;
+  system.switch.enable = false;
+
+  # Minimize nix overhead on target (these are no-ops when nix is disabled)
+  nix.settings.auto-optimise-store = lib.mkForce false;
+  nix.gc.automatic = lib.mkForce false;
+  nix.optimise.automatic = lib.mkForce false;
+
+  # Strip unnecessary packages
+  fonts.fontconfig.enable = false;
+  services.xserver.enable = lib.mkDefault false;
+  environment.defaultPackages = lib.mkForce [];  # Remove perl, rsync, strace defaults
+  environment.systemPackages = with pkgs; [
+    # Absolute minimum — use busybox for most utilities
+    busybox
+    openssh
+    nftables
+    wireguard-tools
+    hostapd
+    conntrack-tools
+  ];
+  # Use lighter alternatives
+  services.openssh.package = pkgs.openssh;
+
+  # Appliance mode — static user accounts
+  users.mutableUsers = false;
+  # Allow login without password/SSH key set (serial console access)
+  users.users.root.password = "alix";
+  # Or: users.allowNoPasswordLogin = true;
+
+  # === Conntrack tuning for low memory ===
+  boot.kernel.sysctl = {
+    "net.netfilter.nf_conntrack_max" = 8192;
+    "net.netfilter.nf_conntrack_tcp_timeout_established" = 7200; # 2h instead of 5d
+    "vm.swappiness" = 60; # Prefer swapping to zram over killing processes
+    "vm.vfs_cache_pressure" = 200; # Reclaim dentry/inode caches aggressively
+    "vm.dirty_ratio" = 5; # Write back early (CF protection)
+    "vm.dirty_background_ratio" = 2;
+  };
+
+  # === Additional tool availability (busybox provides most utilities) ===
+  # busybox from defaultPackages + above list covers all needs
+  programs.vim.defaultEditor = false;
+  programs.bash.completion.enable = false;
+
+  # === SSH access ===
+  services.openssh = {
+    enable = true;
+    settings = {
+      PermitRootLogin = "yes"; # Serial console access only anyway
+      PasswordAuthentication = true; # For initial setup
+    };
+  };
+
+  # === Time ===
+  time.timeZone = "UTC";
+  services.ntp.enable = true; # Lightweight ntpd, not chrony
+
+  # === Networking ===
+  networking.useDHCP = false;
+  networking.useNetworkd = true;
+  networking.networkmanager.enable = false;
+  systemd.network.enable = true;
+
+  # Disable nftables ruleset validation — LKL (Linux Kernel Library)
+  # crashes on i686 during `nft --check`. Rules are still applied,
+  # just not pre-validated during build.
+  networking.nftables.checkRuleset = false;
+
+  # Single core — irqbalance is pointless
+  services.irqbalance.enable = lib.mkForce false;
+
+  # === Gateway profile selection ===
+  # Set this in a host-specific overlay or pass via module args
+  # services.gateway.profile = "alix-networkd"; # or "alix-dnsmasq"
+}

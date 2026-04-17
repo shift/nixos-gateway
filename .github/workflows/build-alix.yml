@@ -1,0 +1,95 @@
+name: Build ALIX Images
+
+on:
+  push:
+    branches: [ main, feature/alix-support ]
+    paths:
+      - 'flake.nix'
+      - 'flake.lock'
+      - 'hosts/**'
+      - 'modules/**'
+      - 'lib/**'
+      - 'config/**'
+      - 'tools/**'
+      - '.github/workflows/build-alix.yml'
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    name: Build ALIX (${{ matrix.profile }})
+    runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+      matrix:
+        profile:
+          - alix-networkd
+          - alix-dnsmasq
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: DeterminateSystems/nix-installer-action@v16
+
+      - uses: DeterminateSystems/magic-nix-cache-action@v8
+
+      - name: Build disk image (${{ matrix.profile }})
+        run: |
+          nix build .#nixosConfigurations.${{ matrix.profile }}.config.system.build.alixImage \
+            --accept-flake-config \
+            --print-build-logs \
+            -L
+
+      - name: Prepare image artifact
+        run: |
+          # The alixImage builder outputs to result/image/
+          IMG=$(find result/image -type f \( -name '*.img.zst' -o -name '*.img' \) | head -1)
+          if [ -z "$IMG" ]; then
+            echo "ERROR: No image found in result/image/"
+            ls -laR result/ || true
+            exit 1
+          fi
+
+          echo "Found image: $IMG"
+          du -h "$IMG"
+
+          # Copy to predictable name for upload
+          cp -L "$IMG" alix-${{ matrix.profile }}.img.zst 2>/dev/null || \
+          cp -L "$IMG" alix-${{ matrix.profile }}.img
+
+          FINAL=alix-${{ matrix.profile }}.img.zst
+          if [ ! -f "$FINAL" ]; then
+            # Not compressed — compress it now
+            zstd -T0 -3 alix-${{ matrix.profile }}.img -o alix-${{ matrix.profile }}.img.zst
+            rm alix-${{ matrix.profile }}.img
+          fi
+
+          IMG_SIZE=$(du -h alix-${{ matrix.profile }}.img.zst | cut -f1)
+          echo "### ${{ matrix.profile }} Image: \`${IMG_SIZE}\` (compressed)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "Download from Actions artifacts, then:" >> $GITHUB_STEP_SUMMARY
+          echo "  zstd -d alix-${{ matrix.profile }}.img.zst" >> $GITHUB_STEP_SUMMARY
+          echo "  sudo dd if=alix-${{ matrix.profile }}.img of=/dev/sdX bs=4M status=progress conv=fsync" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+      - name: Upload image artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: alix-${{ matrix.profile }}
+          path: alix-${{ matrix.profile }}.img.zst
+          retention-days: 90
+          compression-level: 0  # already zstd compressed
+
+      - name: Closure size audit
+        if: always()
+        run: |
+          STORE_PATH=$(nix build \
+            .#nixosConfigurations.${{ matrix.profile }}.config.system.build.toplevel \
+            --no-link --print-out-paths 2>/dev/null || true)
+          if [ -n "$STORE_PATH" ] && [ -d "$STORE_PATH" ]; then
+            echo "### ${{ matrix.profile }} Closure (top 20)" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            nix path-info -rSh "$STORE_PATH" | sort -k2 -rh | head -20 | tee -a $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          fi

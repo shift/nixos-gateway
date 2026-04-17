@@ -7,7 +7,7 @@
 
 let
   cfg = config.services.gateway;
-  enabled = cfg.enable or true;
+  enabled = (cfg.enable or true) && (cfg.profile or "full") == "full";
   hostsData = cfg.data.hosts or { staticDHCPv4Assignments = [ ]; };
   idsData = cfg.data.ids or { };
 
@@ -50,7 +50,7 @@ in
     };
   };
 
-  config = lib.mkMerge [
+  config = lib.mkIf enabled (lib.mkMerge [
     {
       services.prometheus = {
         enable = true;
@@ -80,5 +80,5 @@ in
       ];
     }
 
-  ];
+  ]);
 }

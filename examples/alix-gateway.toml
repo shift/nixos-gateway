@@ -1,0 +1,38 @@
+# gateway.toml — lives on the FAT32 config partition of the ALIX CF card
+# Read by gateway-setup on first/mount boot to generate service configs
+
+hostname = "gw"
+domain = "home.local"
+profile = "alix-dnsmasq"
+
+[network]
+wan_interface = "eth0"
+lan_interface = "eth1"
+lan_ipv4 = "192.168.1.1"
+lan_prefix_len = 24
+
+[dhcp]
+range_start = "192.168.1.100"
+range_end = "192.168.1.200"
+
+[[hosts]]
+name = "server1"
+mac = "aa:bb:cc:dd:ee:01"
+ip = "192.168.1.10"
+
+[[hosts]]
+name = "laptop"
+mac = "aa:bb:cc:dd:ee:02"
+ip = "192.168.1.20"
+
+[wifi.wlan0]
+band = "2.4"
+channel = 6
+ssid = "HomeLAN"
+passphrase = "change-me-now"
+
+[wifi.wlan1]
+band = "5"
+channel = 36
+ssid = "HomeLAN-5G"
+passphrase = "change-me-now"

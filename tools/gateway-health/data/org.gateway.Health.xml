@@ -1,0 +1,25 @@
+<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN"
+  "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+<node>
+  <interface name="org.gateway.Health">
+    <method name="Check">
+      <arg name="report" type="s" direction="out"/>
+    </method>
+    <method name="GetStats">
+      <arg name="stats" type="s" direction="out"/>
+    </method>
+    <method name="IsHealthy">
+      <arg name="healthy" type="b" direction="out"/>
+    </method>
+    <method name="ServiceFailed">
+      <arg name="unit" type="s" direction="in"/>
+    </method>
+    <method name="LinkChanged">
+      <arg name="interface" type="s" direction="in"/>
+      <arg name="oper_state" type="s" direction="in"/>
+    </method>
+    <signal name="HealthChanged">
+      <arg name="healthy" type="b"/>
+    </signal>
+  </interface>
+</node>

@@ -46,7 +46,7 @@ env/
 venv/
 
 # Rust (if used)
-Cargo.lock
+# Cargo.lock is committed for applications (gateway-health, gateway-setup)
 target/
 
 # Node.js (if used)
