@@ -80,9 +80,9 @@ in
       # ── Config partition (common to all schemes) ──
       (lib.mkIf storage.configPartition {
         # Mount the FAT32 config partition for gateway-setup to read
-        # Partition 3 on the CF card (created by the image builder)
+        # Partition 2 on the CF card (created by the image builder)
         fileSystems."/mnt/config" = {
-          device = "/dev/disk/by-partlabel/config";
+          device = "/dev/disk/by-label/CONFIG";
           fsType = "vfat";
           options = [ "noauto" "ro" "nofail" "noexec" "nodev" "nosuid" ];
         };
@@ -101,10 +101,10 @@ in
             RemainAfterExit = true;
           };
           script = ''
-            CONFIG_DEV="/dev/disk/by-partlabel/config"
+            CONFIG_DEV="/dev/disk/by-label/CONFIG"
 
-            if [ -b "$CONFIG_DEV" ] || [ -b "/dev/sda3" ]; then
-              DEV="''${CONFIG_DEV:-/dev/sda3}"
+            if [ -b "$CONFIG_DEV" ] || [ -b "/dev/sda2" ]; then
+              DEV="''${CONFIG_DEV:-/dev/sda2}"
               mkdir -p /mnt/config
               mount -t vfat -o ro "$DEV" /mnt/config 2>/dev/null || true
 
