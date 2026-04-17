@@ -106,16 +106,24 @@ in
 
           # Total image: gap + root + config
           totalBlocks=$((gapSectors + rootSizeBlocks + configSizeBlocks))
+          # Round up to next MiB boundary for sfdisk alignment
+          blocksPerMiB=$((1024 * 1024 / 512))
+          totalBlocks=$(( (totalBlocks / blocksPerMiB + 1) * blocksPerMiB ))
           truncate -s $((totalBlocks * 512)) alix.img
 
           # ── MBR partition table ──
           # Partition 1: ext4 root (bootable)
-          # Partition 2: FAT32 config (partlabel="config" via MBR type=0x0c)
+          # Partition 2: FAT32 config (label CONFIG, type=0c W95 FAT32 LBA)
+          rootEndSector=$((gapSectors + rootSizeBlocks))
+          configStartSector=$((rootEndSector))
+          # Align config start to MiB boundary
+          configStartSector=$(( (configStartSector / blocksPerMiB + 1) * blocksPerMiB ))
+
           sfdisk --no-reread --no-tell-kernel alix.img <<EOF
               label: dos
 
-              start=1M, type=83, bootable
-              type=0c
+              start=$gapSectors, type=83, bootable
+              start=$configStartSector, type=0c
           EOF
 
           echo "Partition table:"
