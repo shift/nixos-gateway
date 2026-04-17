@@ -115,14 +115,15 @@ in
           # Partition 1: ext4 root (bootable)
           # Partition 2: FAT32 config (label CONFIG, type=0c W95 FAT32 LBA)
           rootEndSector=$((gapSectors + rootSizeBlocks))
-          configStartSector=$((rootEndSector))
           # Align config start to MiB boundary
-          configStartSector=$(( (configStartSector / blocksPerMiB + 1) * blocksPerMiB ))
+          blocksPerMiB=$((1024 * 1024 / 512))
+          configStartSector=$(( (rootEndSector / blocksPerMiB + 1) * blocksPerMiB ))
+          rootSizeSectors=$((configStartSector - gapSectors))
 
           sfdisk --no-reread --no-tell-kernel alix.img <<EOF
               label: dos
 
-              start=$gapSectors, type=83, bootable
+              start=$gapSectors, size=$rootSizeSectors, type=83, bootable
               start=$configStartSector, type=0c
           EOF
 
